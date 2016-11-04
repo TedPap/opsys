@@ -1,0 +1,141 @@
+\hypertarget{structthread__control__block}{\section{thread\-\_\-control\-\_\-block Struct Reference}
+\label{structthread__control__block}\index{thread\-\_\-control\-\_\-block@{thread\-\_\-control\-\_\-block}}
+}
+
+
+The thread control block.  
+
+
+
+
+{\ttfamily \#include $<$kernel\-\_\-sched.\-h$>$}
+
+
+
+Collaboration diagram for thread\-\_\-control\-\_\-block\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{structthread__control__block__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Data Fields}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{group__proc_gadf327f09ee935cf1734c14e8849f0421}{P\-C\-B} $\ast$ \hyperlink{structthread__control__block_a74aa312623cb8be2bc719d5210b58c04}{owner\-\_\-pcb}
+\item 
+ucontext\-\_\-t \hyperlink{structthread__control__block_a1531cf79cdf266e2b53239177520896b}{context}
+\item 
+unsigned \hyperlink{structthread__control__block_ad8a2da36c0ad775c12c5f66f4fec9d41}{valgrind\-\_\-stack\-\_\-id}
+\item 
+\hyperlink{group__scheduler_ga18795bc1ab00161fc27ce34b1895fb03}{Thread\-\_\-type} \hyperlink{structthread__control__block_abd0f40bdcb22c701df03f560bbc42d5c}{type}
+\item 
+\hyperlink{group__scheduler_ga6c969c169777f82c104cf73e501df70f}{Thread\-\_\-state} \hyperlink{structthread__control__block_affd872365cf4768fa1c9bd1e196bb97c}{state}
+\item 
+\hyperlink{group__scheduler_gab180b4aa356776bddcd724cef4f5deae}{Thread\-\_\-phase} \hyperlink{structthread__control__block_aa7e8e6a00c5f9f25210a49589ad818f8}{phase}
+\item 
+void($\ast$ \hyperlink{structthread__control__block_af78d506b8afb849bd2ea09d23b787c00}{thread\-\_\-func} )()
+\item 
+\hyperlink{group__syscalls_gaef2ec62cae8e0031fd19fc8b91083ade}{Mutex} \hyperlink{structthread__control__block_a02ae35e9893c3b86f5e6dafe7b8c0065}{state\-\_\-spinlock}
+\item 
+\hyperlink{group__rlists_ga8f6244877f7ce2322c90525217ea6e7a}{rlnode} \hyperlink{structthread__control__block_add433b079e04053fe70fdd2b92e1d6ad}{sched\-\_\-node}
+\item 
+struct \hyperlink{structthread__control__block}{thread\-\_\-control\-\_\-block} $\ast$ \hyperlink{structthread__control__block_a605a6e9bb8154b658ee72e193599d180}{prev}
+\item 
+struct \hyperlink{structthread__control__block}{thread\-\_\-control\-\_\-block} $\ast$ \hyperlink{structthread__control__block_ac6b51ca735291f730ca1d4c335fb9359}{next}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+The thread control block. 
+
+An object of this type is associated to every thread. In this object are stored all the metadata that relate to the thread. 
+
+Definition at line 71 of file kernel\-\_\-sched.\-h.
+
+
+
+\subsection{Field Documentation}
+\hypertarget{structthread__control__block_a1531cf79cdf266e2b53239177520896b}{\index{thread\-\_\-control\-\_\-block@{thread\-\_\-control\-\_\-block}!context@{context}}
+\index{context@{context}!thread_control_block@{thread\-\_\-control\-\_\-block}}
+\subsubsection[{context}]{\setlength{\rightskip}{0pt plus 5cm}ucontext\-\_\-t thread\-\_\-control\-\_\-block\-::context}}\label{structthread__control__block_a1531cf79cdf266e2b53239177520896b}
+The thread context 
+
+Definition at line 75 of file kernel\-\_\-sched.\-h.
+
+\hypertarget{structthread__control__block_ac6b51ca735291f730ca1d4c335fb9359}{\index{thread\-\_\-control\-\_\-block@{thread\-\_\-control\-\_\-block}!next@{next}}
+\index{next@{next}!thread_control_block@{thread\-\_\-control\-\_\-block}}
+\subsubsection[{next}]{\setlength{\rightskip}{0pt plus 5cm}struct {\bf thread\-\_\-control\-\_\-block}$\ast$ thread\-\_\-control\-\_\-block\-::next}}\label{structthread__control__block_ac6b51ca735291f730ca1d4c335fb9359}
+next context 
+
+Definition at line 94 of file kernel\-\_\-sched.\-h.
+
+\hypertarget{structthread__control__block_a74aa312623cb8be2bc719d5210b58c04}{\index{thread\-\_\-control\-\_\-block@{thread\-\_\-control\-\_\-block}!owner\-\_\-pcb@{owner\-\_\-pcb}}
+\index{owner\-\_\-pcb@{owner\-\_\-pcb}!thread_control_block@{thread\-\_\-control\-\_\-block}}
+\subsubsection[{owner\-\_\-pcb}]{\setlength{\rightskip}{0pt plus 5cm}{\bf P\-C\-B}$\ast$ thread\-\_\-control\-\_\-block\-::owner\-\_\-pcb}}\label{structthread__control__block_a74aa312623cb8be2bc719d5210b58c04}
+This is null for a free T\-C\-B 
+
+Definition at line 73 of file kernel\-\_\-sched.\-h.
+
+\hypertarget{structthread__control__block_aa7e8e6a00c5f9f25210a49589ad818f8}{\index{thread\-\_\-control\-\_\-block@{thread\-\_\-control\-\_\-block}!phase@{phase}}
+\index{phase@{phase}!thread_control_block@{thread\-\_\-control\-\_\-block}}
+\subsubsection[{phase}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Thread\-\_\-phase} thread\-\_\-control\-\_\-block\-::phase}}\label{structthread__control__block_aa7e8e6a00c5f9f25210a49589ad818f8}
+The phase of the thread 
+
+Definition at line 83 of file kernel\-\_\-sched.\-h.
+
+\hypertarget{structthread__control__block_a605a6e9bb8154b658ee72e193599d180}{\index{thread\-\_\-control\-\_\-block@{thread\-\_\-control\-\_\-block}!prev@{prev}}
+\index{prev@{prev}!thread_control_block@{thread\-\_\-control\-\_\-block}}
+\subsubsection[{prev}]{\setlength{\rightskip}{0pt plus 5cm}struct {\bf thread\-\_\-control\-\_\-block}$\ast$ thread\-\_\-control\-\_\-block\-::prev}}\label{structthread__control__block_a605a6e9bb8154b658ee72e193599d180}
+previous context 
+
+Definition at line 93 of file kernel\-\_\-sched.\-h.
+
+\hypertarget{structthread__control__block_add433b079e04053fe70fdd2b92e1d6ad}{\index{thread\-\_\-control\-\_\-block@{thread\-\_\-control\-\_\-block}!sched\-\_\-node@{sched\-\_\-node}}
+\index{sched\-\_\-node@{sched\-\_\-node}!thread_control_block@{thread\-\_\-control\-\_\-block}}
+\subsubsection[{sched\-\_\-node}]{\setlength{\rightskip}{0pt plus 5cm}{\bf rlnode} thread\-\_\-control\-\_\-block\-::sched\-\_\-node}}\label{structthread__control__block_add433b079e04053fe70fdd2b92e1d6ad}
+node to use when queueing in the scheduler list 
+
+Definition at line 91 of file kernel\-\_\-sched.\-h.
+
+\hypertarget{structthread__control__block_affd872365cf4768fa1c9bd1e196bb97c}{\index{thread\-\_\-control\-\_\-block@{thread\-\_\-control\-\_\-block}!state@{state}}
+\index{state@{state}!thread_control_block@{thread\-\_\-control\-\_\-block}}
+\subsubsection[{state}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Thread\-\_\-state} thread\-\_\-control\-\_\-block\-::state}}\label{structthread__control__block_affd872365cf4768fa1c9bd1e196bb97c}
+The state of the thread 
+
+Definition at line 82 of file kernel\-\_\-sched.\-h.
+
+\hypertarget{structthread__control__block_a02ae35e9893c3b86f5e6dafe7b8c0065}{\index{thread\-\_\-control\-\_\-block@{thread\-\_\-control\-\_\-block}!state\-\_\-spinlock@{state\-\_\-spinlock}}
+\index{state\-\_\-spinlock@{state\-\_\-spinlock}!thread_control_block@{thread\-\_\-control\-\_\-block}}
+\subsubsection[{state\-\_\-spinlock}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Mutex} thread\-\_\-control\-\_\-block\-::state\-\_\-spinlock}}\label{structthread__control__block_a02ae35e9893c3b86f5e6dafe7b8c0065}
+A spinlock for setting state and phase 
+
+Definition at line 87 of file kernel\-\_\-sched.\-h.
+
+\hypertarget{structthread__control__block_af78d506b8afb849bd2ea09d23b787c00}{\index{thread\-\_\-control\-\_\-block@{thread\-\_\-control\-\_\-block}!thread\-\_\-func@{thread\-\_\-func}}
+\index{thread\-\_\-func@{thread\-\_\-func}!thread_control_block@{thread\-\_\-control\-\_\-block}}
+\subsubsection[{thread\-\_\-func}]{\setlength{\rightskip}{0pt plus 5cm}void($\ast$ thread\-\_\-control\-\_\-block\-::thread\-\_\-func)()}}\label{structthread__control__block_af78d506b8afb849bd2ea09d23b787c00}
+The function executed by this thread 
+
+Definition at line 85 of file kernel\-\_\-sched.\-h.
+
+\hypertarget{structthread__control__block_abd0f40bdcb22c701df03f560bbc42d5c}{\index{thread\-\_\-control\-\_\-block@{thread\-\_\-control\-\_\-block}!type@{type}}
+\index{type@{type}!thread_control_block@{thread\-\_\-control\-\_\-block}}
+\subsubsection[{type}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Thread\-\_\-type} thread\-\_\-control\-\_\-block\-::type}}\label{structthread__control__block_abd0f40bdcb22c701df03f560bbc42d5c}
+The type of thread 
+
+Definition at line 81 of file kernel\-\_\-sched.\-h.
+
+\hypertarget{structthread__control__block_ad8a2da36c0ad775c12c5f66f4fec9d41}{\index{thread\-\_\-control\-\_\-block@{thread\-\_\-control\-\_\-block}!valgrind\-\_\-stack\-\_\-id@{valgrind\-\_\-stack\-\_\-id}}
+\index{valgrind\-\_\-stack\-\_\-id@{valgrind\-\_\-stack\-\_\-id}!thread_control_block@{thread\-\_\-control\-\_\-block}}
+\subsubsection[{valgrind\-\_\-stack\-\_\-id}]{\setlength{\rightskip}{0pt plus 5cm}unsigned thread\-\_\-control\-\_\-block\-::valgrind\-\_\-stack\-\_\-id}}\label{structthread__control__block_ad8a2da36c0ad775c12c5f66f4fec9d41}
+This is useful in order to register the thread stack to valgrind 
+
+Definition at line 78 of file kernel\-\_\-sched.\-h.
+
+
+
+The documentation for this struct was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{kernel__sched_8h}{kernel\-\_\-sched.\-h}\end{DoxyCompactItemize}

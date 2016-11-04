@@ -1,0 +1,78 @@
+\hypertarget{structcore__control__block}{\section{core\-\_\-control\-\_\-block Struct Reference}
+\label{structcore__control__block}\index{core\-\_\-control\-\_\-block@{core\-\_\-control\-\_\-block}}
+}
+
+
+Core control block.  
+
+
+
+
+{\ttfamily \#include $<$kernel\-\_\-sched.\-h$>$}
+
+
+
+Collaboration diagram for core\-\_\-control\-\_\-block\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{structcore__control__block__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Data Fields}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{bios_8h_a91ad9478d81a7aaf2593e8d9c3d06a14}{uint} \hyperlink{structcore__control__block_a5208867f309bdd1656fd473f38b30bfe}{id}
+\item 
+\hyperlink{group__scheduler_gaf88d9c946bf70b36a1e8bc34383abfc9}{T\-C\-B} $\ast$ \hyperlink{structcore__control__block_aac649db5b9a99e693ed21c7e610834bf}{current\-\_\-thread}
+\item 
+\hyperlink{group__scheduler_gaf88d9c946bf70b36a1e8bc34383abfc9}{T\-C\-B} \hyperlink{structcore__control__block_a6dd29dab4a95ce740f45370345408c52}{idle\-\_\-thread}
+\item 
+sig\-\_\-atomic\-\_\-t \hyperlink{structcore__control__block_a858cde45d4478d73f60e839594b363f4}{preemption}
+\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Core control block. 
+
+Per-\/core info in memory (basically scheduler-\/related) 
+
+Definition at line 115 of file kernel\-\_\-sched.\-h.
+
+
+
+\subsection{Field Documentation}
+\hypertarget{structcore__control__block_aac649db5b9a99e693ed21c7e610834bf}{\index{core\-\_\-control\-\_\-block@{core\-\_\-control\-\_\-block}!current\-\_\-thread@{current\-\_\-thread}}
+\index{current\-\_\-thread@{current\-\_\-thread}!core_control_block@{core\-\_\-control\-\_\-block}}
+\subsubsection[{current\-\_\-thread}]{\setlength{\rightskip}{0pt plus 5cm}{\bf T\-C\-B}$\ast$ core\-\_\-control\-\_\-block\-::current\-\_\-thread}}\label{structcore__control__block_aac649db5b9a99e693ed21c7e610834bf}
+Points to the thread currently owning the core 
+
+Definition at line 118 of file kernel\-\_\-sched.\-h.
+
+\hypertarget{structcore__control__block_a5208867f309bdd1656fd473f38b30bfe}{\index{core\-\_\-control\-\_\-block@{core\-\_\-control\-\_\-block}!id@{id}}
+\index{id@{id}!core_control_block@{core\-\_\-control\-\_\-block}}
+\subsubsection[{id}]{\setlength{\rightskip}{0pt plus 5cm}{\bf uint} core\-\_\-control\-\_\-block\-::id}}\label{structcore__control__block_a5208867f309bdd1656fd473f38b30bfe}
+The core id 
+
+Definition at line 116 of file kernel\-\_\-sched.\-h.
+
+\hypertarget{structcore__control__block_a6dd29dab4a95ce740f45370345408c52}{\index{core\-\_\-control\-\_\-block@{core\-\_\-control\-\_\-block}!idle\-\_\-thread@{idle\-\_\-thread}}
+\index{idle\-\_\-thread@{idle\-\_\-thread}!core_control_block@{core\-\_\-control\-\_\-block}}
+\subsubsection[{idle\-\_\-thread}]{\setlength{\rightskip}{0pt plus 5cm}{\bf T\-C\-B} core\-\_\-control\-\_\-block\-::idle\-\_\-thread}}\label{structcore__control__block_a6dd29dab4a95ce740f45370345408c52}
+Used by the scheduler to handle the core's idle thread 
+
+Definition at line 119 of file kernel\-\_\-sched.\-h.
+
+\hypertarget{structcore__control__block_a858cde45d4478d73f60e839594b363f4}{\index{core\-\_\-control\-\_\-block@{core\-\_\-control\-\_\-block}!preemption@{preemption}}
+\index{preemption@{preemption}!core_control_block@{core\-\_\-control\-\_\-block}}
+\subsubsection[{preemption}]{\setlength{\rightskip}{0pt plus 5cm}sig\-\_\-atomic\-\_\-t core\-\_\-control\-\_\-block\-::preemption}}\label{structcore__control__block_a858cde45d4478d73f60e839594b363f4}
+Marks preemption, used by the locking code 
+
+Definition at line 120 of file kernel\-\_\-sched.\-h.
+
+
+
+The documentation for this struct was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{kernel__sched_8h}{kernel\-\_\-sched.\-h}\end{DoxyCompactItemize}

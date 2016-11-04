@@ -1,0 +1,8 @@
+<map id="The TinyOS Kenrel." name="The TinyOS Kenrel.">
+<area shape="rect" id="node1" href="$group__dev.html" title="Device management. " alt="" coords="229,5,299,32"/>
+<area shape="rect" id="node3" href="$group__proc.html" title="The process table and process management. " alt="" coords="222,56,306,83"/>
+<area shape="rect" id="node4" href="$group__streams.html" title="Support for I/O streams. " alt="" coords="227,107,301,133"/>
+<area shape="rect" id="node5" href="$group__scheduler.html" title="The Scheduler API. " alt="" coords="224,157,304,184"/>
+<area shape="rect" id="node6" href="$group__cc.html" title="Concurrency and preemption control API. " alt="" coords="193,208,335,235"/>
+<area shape="rect" id="node7" href="$group__syscalls.html" title="Public kernel API. " alt="" coords="213,259,315,285"/>
+</map>

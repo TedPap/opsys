@@ -1,0 +1,6 @@
+<map id="kernel_proc.h" name="kernel_proc.h">
+<area shape="rect" id="node2" href="$tinyos_8h.html" title="Public kernel API. " alt="" coords="5,155,72,181"/>
+<area shape="rect" id="node4" href="$kernel__sched_8h.html" title="TinyOS kernel: The Scheduler API. " alt="" coords="83,80,193,107"/>
+<area shape="rect" id="node6" href="$util_8h.html" title="Tinyos utility code. " alt="" coords="287,155,337,181"/>
+<area shape="rect" id="node13" href="$bios_8h.html" title="The Virtual Machine API. " alt="" coords="205,155,261,181"/>
+</map>

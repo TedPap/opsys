@@ -1,0 +1,58 @@
+\hypertarget{kernel__cc_8c}{\section{kernel\-\_\-cc.\-c File Reference}
+\label{kernel__cc_8c}\index{kernel\-\_\-cc.\-c@{kernel\-\_\-cc.\-c}}
+}
+
+
+The implementation for concurrency control .  
+
+
+{\ttfamily \#include $<$assert.\-h$>$}\\*
+{\ttfamily \#include \char`\"{}kernel\-\_\-sched.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}kernel\-\_\-proc.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}kernel\-\_\-cc.\-h\char`\"{}}\\*
+Include dependency graph for kernel\-\_\-cc.\-c\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{kernel__cc_8c__incl}
+\end{center}
+\end{figure}
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{kernel__cc_8c_a146046d778f29cb1d176fcbd4d066733}{\#define {\bfseries M\-U\-T\-E\-X\-\_\-\-S\-P\-I\-N\-S}~1000}\label{kernel__cc_8c_a146046d778f29cb1d176fcbd4d066733}
+
+\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{group__cc_ga6121802a0b64aae83288f60bf8a76834}{set\-\_\-core\-\_\-preemption} (int preempt)
+\begin{DoxyCompactList}\small\item\em Set the preemption status for the current thread. \end{DoxyCompactList}\item 
+int \hyperlink{group__cc_gac3fd575c0f82fd75f8e7305be1107e2c}{get\-\_\-core\-\_\-preemption} ()
+\begin{DoxyCompactList}\small\item\em Get the current preemption status. \end{DoxyCompactList}\item 
+void \hyperlink{group__syscalls_ga1140be44df71d39edaf6a7262fb763ca}{Mutex\-\_\-\-Lock} (\hyperlink{group__syscalls_gaef2ec62cae8e0031fd19fc8b91083ade}{Mutex} $\ast$lock)
+\begin{DoxyCompactList}\small\item\em Lock a mutex. \end{DoxyCompactList}\item 
+void \hyperlink{group__syscalls_ga0b98d0315d0931d0c28104c36dd559c9}{Mutex\-\_\-\-Unlock} (\hyperlink{group__syscalls_gaef2ec62cae8e0031fd19fc8b91083ade}{Mutex} $\ast$lock)
+\begin{DoxyCompactList}\small\item\em Unlock a mutex that you locked. \end{DoxyCompactList}\item 
+int \hyperlink{group__syscalls_ga970dca2210b3f2ec8aedab7f542a9bf4}{Cond\-\_\-\-Wait} (\hyperlink{group__syscalls_gaef2ec62cae8e0031fd19fc8b91083ade}{Mutex} $\ast$mutex, \hyperlink{structCondVar}{Cond\-Var} $\ast$cv)
+\begin{DoxyCompactList}\small\item\em Wait on a condition variable. \end{DoxyCompactList}\item 
+\hypertarget{kernel__cc_8c_a771eb358a0028f5dde244cee1773193e}{static \-\_\-\-\_\-cv\-\_\-waitset\-\_\-node $\ast$ {\bfseries cv\-\_\-signal} (\hyperlink{structCondVar}{Cond\-Var} $\ast$cv)}\label{kernel__cc_8c_a771eb358a0028f5dde244cee1773193e}
+
+\item 
+void \hyperlink{group__syscalls_ga43f64f8be273d2fe77d7de5f4b81e22d}{Cond\-\_\-\-Signal} (\hyperlink{structCondVar}{Cond\-Var} $\ast$cv)
+\begin{DoxyCompactList}\small\item\em Signal a condition variable. \end{DoxyCompactList}\item 
+void \hyperlink{group__syscalls_ga8196aa2a48cad90742f254cc3b8fd351}{Cond\-\_\-\-Broadcast} (\hyperlink{structCondVar}{Cond\-Var} $\ast$cv)
+\begin{DoxyCompactList}\small\item\em Notify all threads waiting at a condition variable. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{group__syscalls_gaef2ec62cae8e0031fd19fc8b91083ade}{Mutex} \hyperlink{group__cc_ga57ffb2dcd44b56da47dc03b2f85d9480}{kernel\-\_\-mutex} = \hyperlink{group__syscalls_ga96be0bfc33e7e113099c7546798bec99}{M\-U\-T\-E\-X\-\_\-\-I\-N\-I\-T}
+\begin{DoxyCompactList}\small\item\em The kernel lock. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+The implementation for concurrency control . 
+
+Definition in file \hyperlink{kernel__cc_8c_source}{kernel\-\_\-cc.\-c}.
+

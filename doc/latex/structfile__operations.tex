@@ -1,0 +1,114 @@
+\hypertarget{structfile__operations}{\section{file\-\_\-operations Struct Reference}
+\label{structfile__operations}\index{file\-\_\-operations@{file\-\_\-operations}}
+}
+
+
+The device-\/specific file operations table.  
+
+
+
+
+{\ttfamily \#include $<$kernel\-\_\-dev.\-h$>$}
+
+
+
+Collaboration diagram for file\-\_\-operations\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=160pt]{structfile__operations__coll__graph}
+\end{center}
+\end{figure}
+\subsection*{Data Fields}
+\begin{DoxyCompactItemize}
+\item 
+void $\ast$($\ast$ \hyperlink{structfile__operations_ac7cc611291834295b031874383bf3ec6}{Open} )(\hyperlink{bios_8h_a91ad9478d81a7aaf2593e8d9c3d06a14}{uint} minor)
+\begin{DoxyCompactList}\small\item\em Return a stream object on which the other methods will operate. \end{DoxyCompactList}\item 
+int($\ast$ \hyperlink{structfile__operations_aaec42e751424378bb7fc1ad14c701819}{Read} )(void $\ast$this, char $\ast$buf, unsigned int size)
+\begin{DoxyCompactList}\small\item\em Read operation. \end{DoxyCompactList}\item 
+int($\ast$ \hyperlink{structfile__operations_a18e4e521277501fe34c95a3e2a4ef4d5}{Write} )(void $\ast$this, const char $\ast$buf, unsigned int size)
+\begin{DoxyCompactList}\small\item\em Write operation. \end{DoxyCompactList}\item 
+int($\ast$ \hyperlink{structfile__operations_ae11b010a002957a34b54220a67919ea3}{Close} )(void $\ast$this)
+\begin{DoxyCompactList}\small\item\em Close operation. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+The device-\/specific file operations table. 
+
+This object contains pointers to device-\/specific functions for I/\-O. Device drivers and other resource managers which expose a stream interface, must implement these methods.
+
+The first argument of each method is taken from the 'streamobj' field of the F\-C\-B. \begin{DoxySeeAlso}{See Also}
+\hyperlink{group__rlists_ga60c6c294fa1d8ea73ed270404fe5c17d}{F\-C\-B} 
+\end{DoxySeeAlso}
+
+
+Definition at line 48 of file kernel\-\_\-dev.\-h.
+
+
+
+\subsection{Field Documentation}
+\hypertarget{structfile__operations_ae11b010a002957a34b54220a67919ea3}{\index{file\-\_\-operations@{file\-\_\-operations}!Close@{Close}}
+\index{Close@{Close}!file_operations@{file\-\_\-operations}}
+\subsubsection[{Close}]{\setlength{\rightskip}{0pt plus 5cm}int($\ast$ file\-\_\-operations\-::\-Close)(void $\ast$this)}}\label{structfile__operations_ae11b010a002957a34b54220a67919ea3}
+
+
+Close operation. 
+
+Close the stream object, deallocating any resources held by it. This function returns 0 is it was successful and -\/1 if not. Although the value in case of failure is passed to the calling process, the stream should still be destroyed.
+
+Possible errors are\-:
+\begin{DoxyItemize}
+\item There was a I/\-O runtime problem. 
+\end{DoxyItemize}
+
+Definition at line 94 of file kernel\-\_\-dev.\-h.
+
+\hypertarget{structfile__operations_ac7cc611291834295b031874383bf3ec6}{\index{file\-\_\-operations@{file\-\_\-operations}!Open@{Open}}
+\index{Open@{Open}!file_operations@{file\-\_\-operations}}
+\subsubsection[{Open}]{\setlength{\rightskip}{0pt plus 5cm}void$\ast$($\ast$ file\-\_\-operations\-::\-Open)({\bf uint} minor)}}\label{structfile__operations_ac7cc611291834295b031874383bf3ec6}
+
+
+Return a stream object on which the other methods will operate. 
+
+This function is passed the minor number of the device to be accessed. 
+
+Definition at line 55 of file kernel\-\_\-dev.\-h.
+
+\hypertarget{structfile__operations_aaec42e751424378bb7fc1ad14c701819}{\index{file\-\_\-operations@{file\-\_\-operations}!Read@{Read}}
+\index{Read@{Read}!file_operations@{file\-\_\-operations}}
+\subsubsection[{Read}]{\setlength{\rightskip}{0pt plus 5cm}int($\ast$ file\-\_\-operations\-::\-Read)(void $\ast$this, char $\ast$buf, unsigned int size)}}\label{structfile__operations_aaec42e751424378bb7fc1ad14c701819}
+
+
+Read operation. 
+
+Read up to 'size' bytes from stream 'this' into buffer 'buf'. If no data is available, the thread will block, to wait for data. The Read function should return the number of bytes copied into buf, or -\/1 on error. The call may return fewer bytes than 'size', but at least 1. A value of 0 indicates \char`\"{}end of data\char`\"{}.
+
+Possible errors are\-:
+\begin{DoxyItemize}
+\item There was a I/\-O runtime problem. 
+\end{DoxyItemize}
+
+Definition at line 69 of file kernel\-\_\-dev.\-h.
+
+\hypertarget{structfile__operations_a18e4e521277501fe34c95a3e2a4ef4d5}{\index{file\-\_\-operations@{file\-\_\-operations}!Write@{Write}}
+\index{Write@{Write}!file_operations@{file\-\_\-operations}}
+\subsubsection[{Write}]{\setlength{\rightskip}{0pt plus 5cm}int($\ast$ file\-\_\-operations\-::\-Write)(void $\ast$this, const char $\ast$buf, unsigned int size)}}\label{structfile__operations_a18e4e521277501fe34c95a3e2a4ef4d5}
+
+
+Write operation. 
+
+Write up to 'size' bytes from 'buf' to the stream 'this'. If it is not possible to write any data (e.\-g., a buffer is full), the thread will block. The write function should return the number of bytes copied from buf, or -\/1 on error.
+
+Possible errors are\-:
+\begin{DoxyItemize}
+\item There was a I/\-O runtime problem. 
+\end{DoxyItemize}
+
+Definition at line 82 of file kernel\-\_\-dev.\-h.
+
+
+
+The documentation for this struct was generated from the following file\-:\begin{DoxyCompactItemize}
+\item 
+\hyperlink{kernel__dev_8h}{kernel\-\_\-dev.\-h}\end{DoxyCompactItemize}

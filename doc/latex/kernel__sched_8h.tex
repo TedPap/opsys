@@ -1,0 +1,104 @@
+\hypertarget{kernel__sched_8h}{\section{kernel\-\_\-sched.\-h File Reference}
+\label{kernel__sched_8h}\index{kernel\-\_\-sched.\-h@{kernel\-\_\-sched.\-h}}
+}
+
+
+Tiny\-O\-S kernel\-: The Scheduler A\-P\-I.  
+
+
+{\ttfamily \#include $<$ucontext.\-h$>$}\\*
+{\ttfamily \#include \char`\"{}util.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}bios.\-h\char`\"{}}\\*
+{\ttfamily \#include \char`\"{}tinyos.\-h\char`\"{}}\\*
+Include dependency graph for kernel\-\_\-sched.\-h\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{kernel__sched_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{kernel__sched_8h__dep__incl}
+\end{center}
+\end{figure}
+\subsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structthread__control__block}{thread\-\_\-control\-\_\-block}
+\begin{DoxyCompactList}\small\item\em The thread control block. \end{DoxyCompactList}\item 
+struct \hyperlink{structcore__control__block}{core\-\_\-control\-\_\-block}
+\begin{DoxyCompactList}\small\item\em Core control block. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{group__scheduler_ga90b7a8cb7bc3fdbd98014a3e15ee6e9a}{T\-H\-R\-E\-A\-D\-\_\-\-S\-T\-A\-C\-K\-\_\-\-S\-I\-Z\-E}~(128$\ast$1024)
+\item 
+\hypertarget{group__scheduler_ga869aabe01f7b28027376354dd895b96b}{\#define \hyperlink{group__scheduler_ga869aabe01f7b28027376354dd895b96b}{C\-U\-R\-C\-O\-R\-E}~(\hyperlink{group__scheduler_ga3be3b151b275926dff3fb99bee765eab}{cctx}\mbox{[}\hyperlink{bios_8h_abac58ced7d51f54f2318b326bc991933}{cpu\-\_\-core\-\_\-id}\mbox{]})}\label{group__scheduler_ga869aabe01f7b28027376354dd895b96b}
+
+\begin{DoxyCompactList}\small\item\em The current core's C\-C\-B. \end{DoxyCompactList}\item 
+\#define \hyperlink{group__scheduler_ga587a82c8931f0df72f43cc913ceb7e27}{C\-U\-R\-T\-H\-R\-E\-A\-D}~(C\-U\-R\-C\-O\-R\-E.\-current\-\_\-thread)
+\begin{DoxyCompactList}\small\item\em The current thread. \end{DoxyCompactList}\item 
+\#define \hyperlink{group__scheduler_gae3437e8e6787ef05b6576d03c5b6a0ca}{C\-U\-R\-P\-R\-O\-C}~(\hyperlink{group__scheduler_ga587a82c8931f0df72f43cc913ceb7e27}{C\-U\-R\-T\-H\-R\-E\-A\-D}-\/$>$owner\-\_\-pcb)
+\begin{DoxyCompactList}\small\item\em The current thread. \end{DoxyCompactList}\item 
+\#define \hyperlink{group__scheduler_gabc4f0f9abea1b5443308e4ea84b52b21}{Q\-U\-A\-N\-T\-U\-M}~(50000\-L)
+\begin{DoxyCompactList}\small\item\em Quantum (in microseconds) \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef struct \hyperlink{structthread__control__block}{thread\-\_\-control\-\_\-block} \hyperlink{group__scheduler_gaf88d9c946bf70b36a1e8bc34383abfc9}{T\-C\-B}
+\begin{DoxyCompactList}\small\item\em The thread control block. \end{DoxyCompactList}\item 
+typedef struct \hyperlink{structcore__control__block}{core\-\_\-control\-\_\-block} \hyperlink{group__scheduler_ga7485b31e0dd9fd723bc2d75fba5206a0}{C\-C\-B}
+\begin{DoxyCompactList}\small\item\em Core control block. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \hyperlink{group__scheduler_ga6c969c169777f82c104cf73e501df70f}{Thread\-\_\-state} \{ \\*
+\hyperlink{group__scheduler_gga6c969c169777f82c104cf73e501df70fa0cb1b2c6a7db1f1084886c98909a3f36}{I\-N\-I\-T}, 
+\hyperlink{group__scheduler_gga6c969c169777f82c104cf73e501df70fa6564f2f3e15be06b670547bbcaaf0798}{R\-E\-A\-D\-Y}, 
+\hyperlink{group__scheduler_gga6c969c169777f82c104cf73e501df70fa1061be6c3fb88d32829cba6f6b2be304}{R\-U\-N\-N\-I\-N\-G}, 
+\hyperlink{group__scheduler_gga6c969c169777f82c104cf73e501df70fa948b2aee15f52b421fa4770c47bcfe8c}{S\-T\-O\-P\-P\-E\-D}, 
+\\*
+\hyperlink{group__scheduler_gga6c969c169777f82c104cf73e501df70fab9f9543350f6bd6191e52158daa88884}{E\-X\-I\-T\-E\-D}
+ \}
+\begin{DoxyCompactList}\small\item\em Thread state. \end{DoxyCompactList}\item 
+enum \hyperlink{group__scheduler_gab180b4aa356776bddcd724cef4f5deae}{Thread\-\_\-phase} \{ \hyperlink{group__scheduler_ggab180b4aa356776bddcd724cef4f5deaeaa826daca588e692c88114586b0de472b}{C\-T\-X\-\_\-\-C\-L\-E\-A\-N}, 
+\hyperlink{group__scheduler_ggab180b4aa356776bddcd724cef4f5deaea2b4b41fda67c1a83e6523675515c007b}{C\-T\-X\-\_\-\-D\-I\-R\-T\-Y}
+ \}
+\begin{DoxyCompactList}\small\item\em Thread phase. \end{DoxyCompactList}\item 
+enum \hyperlink{group__scheduler_ga18795bc1ab00161fc27ce34b1895fb03}{Thread\-\_\-type} \{ \hyperlink{group__scheduler_gga18795bc1ab00161fc27ce34b1895fb03abc11b4e4eba50c875d7ed6bc34090dd3}{I\-D\-L\-E\-\_\-\-T\-H\-R\-E\-A\-D}, 
+\hyperlink{group__scheduler_gga18795bc1ab00161fc27ce34b1895fb03a1d3bb8be1deb6ac7be94fea88e1ed76b}{N\-O\-R\-M\-A\-L\-\_\-\-T\-H\-R\-E\-A\-D}
+ \}
+\begin{DoxyCompactList}\small\item\em Thread type. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{group__scheduler_gaf88d9c946bf70b36a1e8bc34383abfc9}{T\-C\-B} $\ast$ \hyperlink{group__scheduler_ga34517ad777ad754965f80fe0248c16e5}{spawn\-\_\-thread} (\hyperlink{group__proc_gadf327f09ee935cf1734c14e8849f0421}{P\-C\-B} $\ast$pcb, void($\ast$func)())
+\begin{DoxyCompactList}\small\item\em Create a new thread. \end{DoxyCompactList}\item 
+void \hyperlink{group__scheduler_ga813d6e8ee69aed65bc5c317b99cfa51e}{wakeup} (\hyperlink{group__scheduler_gaf88d9c946bf70b36a1e8bc34383abfc9}{T\-C\-B} $\ast$tcb)
+\begin{DoxyCompactList}\small\item\em Wakeup a blocked thread. \end{DoxyCompactList}\item 
+void \hyperlink{group__scheduler_gae66dcfd964026bd58e91dc88db14b630}{sleep\-\_\-releasing} (\hyperlink{group__scheduler_ga6c969c169777f82c104cf73e501df70f}{Thread\-\_\-state} newstate, \hyperlink{group__syscalls_gaef2ec62cae8e0031fd19fc8b91083ade}{Mutex} $\ast$mx)
+\begin{DoxyCompactList}\small\item\em Block the current thread. \end{DoxyCompactList}\item 
+void \hyperlink{group__scheduler_ga7cb51f5c2b5cad3766f19eb69c92793b}{yield} (void)
+\begin{DoxyCompactList}\small\item\em Give up the C\-P\-U. \end{DoxyCompactList}\item 
+void \hyperlink{group__scheduler_ga147600b59d656eb9d9558673c2fad36d}{run\-\_\-scheduler} (void)
+\begin{DoxyCompactList}\small\item\em Enter the scheduler. \end{DoxyCompactList}\item 
+void \hyperlink{group__scheduler_ga244fb594301322e79d11a7844c759bba}{initialize\-\_\-scheduler} (void)
+\begin{DoxyCompactList}\small\item\em Initialize the scheduler. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hypertarget{group__scheduler_ga3be3b151b275926dff3fb99bee765eab}{\hyperlink{group__scheduler_ga7485b31e0dd9fd723bc2d75fba5206a0}{C\-C\-B} \hyperlink{group__scheduler_ga3be3b151b275926dff3fb99bee765eab}{cctx} \mbox{[}\hyperlink{bios_8h_a009855593b59738d24dbfc236edb3b14}{M\-A\-X\-\_\-\-C\-O\-R\-E\-S}\mbox{]}}\label{group__scheduler_ga3be3b151b275926dff3fb99bee765eab}
+
+\begin{DoxyCompactList}\small\item\em the array of Core Control Blocks (C\-C\-B) for the kernel \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Tiny\-O\-S kernel\-: The Scheduler A\-P\-I. 
+
+Definition in file \hyperlink{kernel__sched_8h_source}{kernel\-\_\-sched.\-h}.
+

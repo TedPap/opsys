@@ -1,0 +1,51 @@
+\hypertarget{kernel__cc_8h}{\section{kernel\-\_\-cc.\-h File Reference}
+\label{kernel__cc_8h}\index{kernel\-\_\-cc.\-h@{kernel\-\_\-cc.\-h}}
+}
+
+
+Concurrency and preemption control A\-P\-I.  
+
+
+{\ttfamily \#include \char`\"{}tinyos.\-h\char`\"{}}\\*
+Include dependency graph for kernel\-\_\-cc.\-h\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=146pt]{kernel__cc_8h__incl}
+\end{center}
+\end{figure}
+This graph shows which files directly or indirectly include this file\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=350pt]{kernel__cc_8h__dep__incl}
+\end{center}
+\end{figure}
+\subsection*{Macros}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{group__cc_gaf936bcf607a61848cfea21c119f30905}{preempt\-\_\-off}~(\hyperlink{group__cc_ga6121802a0b64aae83288f60bf8a76834}{set\-\_\-core\-\_\-preemption}(0))
+\begin{DoxyCompactList}\small\item\em Easily turn preemption off. \end{DoxyCompactList}\item 
+\#define \hyperlink{group__cc_gac8efed506a60c7c6f02514e878a4004b}{preempt\-\_\-on}~(\hyperlink{group__cc_ga6121802a0b64aae83288f60bf8a76834}{set\-\_\-core\-\_\-preemption}(1))
+\begin{DoxyCompactList}\small\item\em Easily turn preemption off. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \hyperlink{group__cc_ga6121802a0b64aae83288f60bf8a76834}{set\-\_\-core\-\_\-preemption} (int preempt)
+\begin{DoxyCompactList}\small\item\em Set the preemption status for the current thread. \end{DoxyCompactList}\item 
+int \hyperlink{group__cc_gac3fd575c0f82fd75f8e7305be1107e2c}{get\-\_\-core\-\_\-preemption} ()
+\begin{DoxyCompactList}\small\item\em Get the current preemption status. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Variables}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{group__syscalls_gaef2ec62cae8e0031fd19fc8b91083ade}{Mutex} \hyperlink{group__cc_ga57ffb2dcd44b56da47dc03b2f85d9480}{kernel\-\_\-mutex}
+\begin{DoxyCompactList}\small\item\em The kernel lock. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+Concurrency and preemption control A\-P\-I. 
+
+Definition in file \hyperlink{kernel__cc_8h_source}{kernel\-\_\-cc.\-h}.
+

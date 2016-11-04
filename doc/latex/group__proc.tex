@@ -1,0 +1,159 @@
+\hypertarget{group__proc}{\section{Processes}
+\label{group__proc}\index{Processes@{Processes}}
+}
+
+
+The process table and process management.  
+
+
+Collaboration diagram for Processes\-:
+\nopagebreak
+\begin{figure}[H]
+\begin{center}
+\leavevmode
+\includegraphics[width=284pt]{group__proc}
+\end{center}
+\end{figure}
+\subsection*{Data Structures}
+\begin{DoxyCompactItemize}
+\item 
+struct \hyperlink{structprocess__control__block}{process\-\_\-control\-\_\-block}
+\begin{DoxyCompactList}\small\item\em Process Control Block. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Typedefs}
+\begin{DoxyCompactItemize}
+\item 
+typedef enum \hyperlink{group__proc_ga4f133ac5f9b2ca9c1446889baee1dc05}{pid\-\_\-state\-\_\-e} \hyperlink{group__proc_gade1eea4d20492c4c97263201145e5097}{pid\-\_\-state}
+\begin{DoxyCompactList}\small\item\em P\-I\-D state. \end{DoxyCompactList}\item 
+typedef struct \\*
+\hyperlink{structprocess__control__block}{process\-\_\-control\-\_\-block} \hyperlink{group__proc_gadf327f09ee935cf1734c14e8849f0421}{P\-C\-B}
+\begin{DoxyCompactList}\small\item\em Process Control Block. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Enumerations}
+\begin{DoxyCompactItemize}
+\item 
+enum \hyperlink{group__proc_ga4f133ac5f9b2ca9c1446889baee1dc05}{pid\-\_\-state\-\_\-e} \{ \hyperlink{group__proc_gga4f133ac5f9b2ca9c1446889baee1dc05acc62d1576546f3245237e1b232d838b6}{F\-R\-E\-E}, 
+\hyperlink{group__proc_gga4f133ac5f9b2ca9c1446889baee1dc05a4f34c5c191d6e0d028ca831b6c0b1571}{A\-L\-I\-V\-E}, 
+\hyperlink{group__proc_gga4f133ac5f9b2ca9c1446889baee1dc05a5dfb36109b24f39d54d5c3f48f53def8}{Z\-O\-M\-B\-I\-E}
+ \}
+\begin{DoxyCompactList}\small\item\em P\-I\-D state. \end{DoxyCompactList}\end{DoxyCompactItemize}
+\subsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{group__proc_ga82948cbeb57bb0b6e15d1f14f06a2db3}{initialize\-\_\-processes} ()
+\begin{DoxyCompactList}\small\item\em Initialize the process table. \end{DoxyCompactList}\item 
+\hyperlink{group__proc_gadf327f09ee935cf1734c14e8849f0421}{P\-C\-B} $\ast$ \hyperlink{group__proc_ga10cf45ea8bc92b00bd1f25553b9cf5c8}{get\-\_\-pcb} (\hyperlink{group__syscalls_gafac07f3170763932fac97b6eab2c3984}{Pid\-\_\-t} pid)
+\begin{DoxyCompactList}\small\item\em Get the P\-C\-B for a P\-I\-D. \end{DoxyCompactList}\item 
+\hyperlink{group__syscalls_gafac07f3170763932fac97b6eab2c3984}{Pid\-\_\-t} \hyperlink{group__proc_ga110e884cb053244b18d1058751a78cfe}{get\-\_\-pid} (\hyperlink{group__proc_gadf327f09ee935cf1734c14e8849f0421}{P\-C\-B} $\ast$pcb)
+\begin{DoxyCompactList}\small\item\em Get the P\-I\-D of a P\-C\-B. \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\subsection{Detailed Description}
+The process table and process management. This file defines the P\-C\-B structure and basic helpers for process access. 
+
+\subsection{Typedef Documentation}
+\hypertarget{group__proc_gadf327f09ee935cf1734c14e8849f0421}{\index{Processes@{Processes}!P\-C\-B@{P\-C\-B}}
+\index{P\-C\-B@{P\-C\-B}!Processes@{Processes}}
+\subsubsection[{P\-C\-B}]{\setlength{\rightskip}{0pt plus 5cm}typedef struct {\bf process\-\_\-control\-\_\-block}  {\bf P\-C\-B}}}\label{group__proc_gadf327f09ee935cf1734c14e8849f0421}
+
+
+Process Control Block. 
+
+This structure holds all information pertaining to a process. \hypertarget{group__proc_gade1eea4d20492c4c97263201145e5097}{\index{Processes@{Processes}!pid\-\_\-state@{pid\-\_\-state}}
+\index{pid\-\_\-state@{pid\-\_\-state}!Processes@{Processes}}
+\subsubsection[{pid\-\_\-state}]{\setlength{\rightskip}{0pt plus 5cm}typedef enum {\bf pid\-\_\-state\-\_\-e}  {\bf pid\-\_\-state}}}\label{group__proc_gade1eea4d20492c4c97263201145e5097}
+
+
+P\-I\-D state. 
+
+A P\-I\-D can be either free (no process is using it), A\-L\-I\-V\-E (some running process is using it), or Z\-O\-M\-B\-I\-E (a zombie process is using it). 
+
+\subsection{Enumeration Type Documentation}
+\hypertarget{group__proc_ga4f133ac5f9b2ca9c1446889baee1dc05}{\index{Processes@{Processes}!pid\-\_\-state\-\_\-e@{pid\-\_\-state\-\_\-e}}
+\index{pid\-\_\-state\-\_\-e@{pid\-\_\-state\-\_\-e}!Processes@{Processes}}
+\subsubsection[{pid\-\_\-state\-\_\-e}]{\setlength{\rightskip}{0pt plus 5cm}enum {\bf pid\-\_\-state\-\_\-e}}}\label{group__proc_ga4f133ac5f9b2ca9c1446889baee1dc05}
+
+
+P\-I\-D state. 
+
+A P\-I\-D can be either free (no process is using it), A\-L\-I\-V\-E (some running process is using it), or Z\-O\-M\-B\-I\-E (a zombie process is using it). \begin{Desc}
+\item[Enumerator]\par
+\begin{description}
+\index{F\-R\-E\-E@{F\-R\-E\-E}!Processes@{Processes}}\index{Processes@{Processes}!F\-R\-E\-E@{F\-R\-E\-E}}\item[{\em 
+\hypertarget{group__proc_gga4f133ac5f9b2ca9c1446889baee1dc05acc62d1576546f3245237e1b232d838b6}{F\-R\-E\-E}\label{group__proc_gga4f133ac5f9b2ca9c1446889baee1dc05acc62d1576546f3245237e1b232d838b6}
+}]The P\-I\-D is free and available \index{A\-L\-I\-V\-E@{A\-L\-I\-V\-E}!Processes@{Processes}}\index{Processes@{Processes}!A\-L\-I\-V\-E@{A\-L\-I\-V\-E}}\item[{\em 
+\hypertarget{group__proc_gga4f133ac5f9b2ca9c1446889baee1dc05a4f34c5c191d6e0d028ca831b6c0b1571}{A\-L\-I\-V\-E}\label{group__proc_gga4f133ac5f9b2ca9c1446889baee1dc05a4f34c5c191d6e0d028ca831b6c0b1571}
+}]The P\-I\-D is given to a process \index{Z\-O\-M\-B\-I\-E@{Z\-O\-M\-B\-I\-E}!Processes@{Processes}}\index{Processes@{Processes}!Z\-O\-M\-B\-I\-E@{Z\-O\-M\-B\-I\-E}}\item[{\em 
+\hypertarget{group__proc_gga4f133ac5f9b2ca9c1446889baee1dc05a5dfb36109b24f39d54d5c3f48f53def8}{Z\-O\-M\-B\-I\-E}\label{group__proc_gga4f133ac5f9b2ca9c1446889baee1dc05a5dfb36109b24f39d54d5c3f48f53def8}
+}]The P\-I\-D is held by a zombie \end{description}
+\end{Desc}
+
+
+Definition at line 27 of file kernel\-\_\-proc.\-h.
+
+
+
+\subsection{Function Documentation}
+\hypertarget{group__proc_ga10cf45ea8bc92b00bd1f25553b9cf5c8}{\index{Processes@{Processes}!get\-\_\-pcb@{get\-\_\-pcb}}
+\index{get\-\_\-pcb@{get\-\_\-pcb}!Processes@{Processes}}
+\subsubsection[{get\-\_\-pcb}]{\setlength{\rightskip}{0pt plus 5cm}{\bf P\-C\-B}$\ast$ get\-\_\-pcb (
+\begin{DoxyParamCaption}
+\item[{{\bf Pid\-\_\-t}}]{pid}
+\end{DoxyParamCaption}
+)}}\label{group__proc_ga10cf45ea8bc92b00bd1f25553b9cf5c8}
+
+
+Get the P\-C\-B for a P\-I\-D. 
+
+This function will return a pointer to the P\-C\-B of the process with a given P\-I\-D. If the P\-I\-D does not correspond to a process, the function returns {\ttfamily N\-U\-L\-L}.
+
+
+\begin{DoxyParams}{Parameters}
+{\em pid} & the pid of the process \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+A pointer to the P\-C\-B of the process, or N\-U\-L\-L. 
+\end{DoxyReturn}
+
+
+Definition at line 22 of file kernel\-\_\-proc.\-c.
+
+\hypertarget{group__proc_ga110e884cb053244b18d1058751a78cfe}{\index{Processes@{Processes}!get\-\_\-pid@{get\-\_\-pid}}
+\index{get\-\_\-pid@{get\-\_\-pid}!Processes@{Processes}}
+\subsubsection[{get\-\_\-pid}]{\setlength{\rightskip}{0pt plus 5cm}{\bf Pid\-\_\-t} get\-\_\-pid (
+\begin{DoxyParamCaption}
+\item[{{\bf P\-C\-B} $\ast$}]{pcb}
+\end{DoxyParamCaption}
+)}}\label{group__proc_ga110e884cb053244b18d1058751a78cfe}
+
+
+Get the P\-I\-D of a P\-C\-B. 
+
+This function will return the P\-I\-D of the process whose P\-C\-B is pointed at by {\ttfamily pcb}. If the pcb does not correspond to a process, the function returns {\ttfamily N\-O\-P\-R\-O\-C}.
+
+
+\begin{DoxyParams}{Parameters}
+{\em pcb} & the pcb of the process \\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+the P\-I\-D of the process, or N\-O\-P\-R\-O\-C. 
+\end{DoxyReturn}
+
+
+Definition at line 27 of file kernel\-\_\-proc.\-c.
+
+\hypertarget{group__proc_ga82948cbeb57bb0b6e15d1f14f06a2db3}{\index{Processes@{Processes}!initialize\-\_\-processes@{initialize\-\_\-processes}}
+\index{initialize\-\_\-processes@{initialize\-\_\-processes}!Processes@{Processes}}
+\subsubsection[{initialize\-\_\-processes}]{\setlength{\rightskip}{0pt plus 5cm}void initialize\-\_\-processes (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{group__proc_ga82948cbeb57bb0b6e15d1f14f06a2db3}
+
+
+Initialize the process table. 
+
+This function is called during kernel initialization, to initialize any data structures related to process creation. 
+
+Definition at line 52 of file kernel\-\_\-proc.\-c.
+
