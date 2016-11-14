@@ -246,10 +246,10 @@ void ici_handler()
 */
 void sched_queue_add(TCB* tcb)
 {
-  /* Insert at the end of the top priority queue */
+  /* Insert at the end of the priority queue */
   Mutex_Lock(& sched_spinlock);
   rlist_push_back(& SCHED[tcb->priority], & tcb->sched_node);
-  //printf("Added to queue no %d \n", tcb->priority);
+  //printf("Added to queue: %d\n", tcb->priority);
   Mutex_Unlock(& sched_spinlock);
 
   /* Restart possibly halted cores */
@@ -267,10 +267,11 @@ TCB* sched_queue_select()
   int i=0;
 
   Mutex_Lock(& sched_spinlock);
-  while(sel == NULL && i<NUM_OF_QUEUES)
+  while(i<NUM_OF_QUEUES)
   {
     sel = rlist_pop_front(& SCHED[i]);
-    //printf("Queue %d checked\n", i);
+    if(sel->tcb != NULL)
+      break;
     i++;
   }
   Mutex_Unlock(& sched_spinlock);
@@ -352,7 +353,7 @@ void yield(char* where)
   int current_ready = 0;
 
   /* Priority management */
-  printf("%p: Yield called from: %s\n", current, where);
+  //printf("%p: Yield called from: %s\n", current, where);
 
   if(where=="yield_handler")
   {
@@ -361,8 +362,8 @@ void yield(char* where)
   }
   else if (where=="sleep_releasing")
   {
-    if (current->priority > 0)
-      current->priority--;
+    //if (current->priority > 0)
+      //current->priority--;
   }
   else if (where=="serial_write")
   {
@@ -371,18 +372,16 @@ void yield(char* where)
   }
   else if (where=="idle_thread_1")
   {
-
+    
   }
   else if (where=="idle_thread_2")
   {
-
+    
   }
   else{
     fprintf(stderr, "BAD PRIORITY for current thread %p in yield: %d\n", current, current->priority);
     assert(0);
   }
-
-  printf("%p: %d\n", current, current->priority);
 
   Mutex_Lock(& current->state_spinlock);
   switch(current->state)
@@ -414,15 +413,15 @@ void yield(char* where)
       next = & CURCORE.idle_thread;
   }
 
+  //printf("!!YIELD: %s//PRIORITY: %d\n!!CURTHREAD: %p//NEXT: %p\n", where, current->priority, current, next);
+
   /* ok, link the current and next TCB, for the gain phase */
   current->next = next;
   next->prev = current;
 
   /* Switch contexts */
   if(current!=next) {
-    printf("CHECK5 %p\n", next);
     CURTHREAD = next;
-    printf("CHECK6 %p\n", CURTHREAD);
     swapcontext( & current->context , & next->context );
   }
 
