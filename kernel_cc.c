@@ -78,7 +78,7 @@ void Mutex_Lock(Mutex* lock)
       else { 
       	spin=MUTEX_SPINS; 
       	if(get_core_preemption())
-      		yield("Mutex_Lock"); 
+      		yield(MUTEX_LCK); 
       }
     }
   }

@@ -47,6 +47,21 @@ typedef enum {
     EXITED      /**< A terminated thread   */
   } Thread_state;
 
+/** @brief Yield Origin.
+
+  A value of this type determines where yield was called from in the kernel
+
+*/
+typedef enum {
+    START,        /**< Default value */
+    IDLE1,        /**< First yield in idle_thread   */
+    IDLE2,        /**< Second yield in idle_thread   */
+    YIELD_HND,    /**< Yield in yield_handler   */
+    SLEEP_RLS,    /**< Yield in sleep_releasing   */
+    SERIAL_WRT,   /**< Yield in serial_write from kernel_dev.c   */
+    MUTEX_LCK,    /**< Yield in mutex_lock from kernel_cc.c   */
+  } Yield_Origin;
+
 /** @brief Thread phase. 
 
   @see Thread_state
@@ -94,6 +109,7 @@ typedef struct thread_control_block
   struct thread_control_block * next;  /**< next context */
 
   int priority;     /**< the thread's priority */
+  int wait_count;    /**< timestamp to determine thread's waiting time */
   
 } TCB;
 
@@ -197,7 +213,7 @@ void sleep_releasing(Thread_state newstate, Mutex* mx);
   and possibly switch to a different thread. The scheduler may decide that 
   it will renew the quantum for the current thread.
  */
-void yield(char* where);
+void yield(Yield_Origin where);
 
 /**
   @brief Enter the scheduler.

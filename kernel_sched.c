@@ -155,6 +155,7 @@ TCB* spawn_thread(PCB* pcb, void (*func)())
   tcb->state_spinlock = MUTEX_INIT;
   tcb->thread_func = func;
   tcb->priority = 0;
+  tcb->wait_count = 0;
   rlnode_init(& tcb->sched_node, tcb);  /* Intrusive list node */
 
 
@@ -223,6 +224,7 @@ CCB cctx[MAX_CORES];
 
 //rlnode SCHED;                         /* The scheduler queue */
 rlnode SCHED[NUM_OF_QUEUES];/* Mlfq queues array */
+int QueuePops[NUM_OF_QUEUES] = {0, 0, 0, 0, 0, 0, 0, 0};
 Mutex sched_spinlock = MUTEX_INIT;    /* spinlock for scheduler queue */
 
 
@@ -230,7 +232,7 @@ Mutex sched_spinlock = MUTEX_INIT;    /* spinlock for scheduler queue */
 void yield_handler()
 {
   //if CURTHREAD->priority<=2 CURTHREAD->priority++;
-  yield("yield_handler");
+  yield(YIELD_HND);
 }
 
 /* Interrupt handle for inter-core interrupts */
@@ -249,7 +251,6 @@ void sched_queue_add(TCB* tcb)
   /* Insert at the end of the priority queue */
   Mutex_Lock(& sched_spinlock);
   rlist_push_back(& SCHED[tcb->priority], & tcb->sched_node);
-  //printf("Added to queue: %d\n", tcb->priority);
   Mutex_Unlock(& sched_spinlock);
 
   /* Restart possibly halted cores */
@@ -271,7 +272,11 @@ TCB* sched_queue_select()
   {
     sel = rlist_pop_front(& SCHED[i]);
     if(sel->tcb != NULL)
+    {
+      QueuePops[i]++;
+      //printf("QueuePops[%d]: %d\n", i, QueuePops[i]);
       break;
+    }
     i++;
   }
   Mutex_Unlock(& sched_spinlock);
@@ -331,7 +336,7 @@ void sleep_releasing(Thread_state state, Mutex* mx)
   Mutex_Unlock(& tcb->state_spinlock);
   
   /* call this to schedule someone else */
-  yield("sleep_releasing");
+  yield(SLEEP_RLS);
 
   /* Restore preemption state */
   if(preempt) preempt_on;
@@ -340,7 +345,7 @@ void sleep_releasing(Thread_state state, Mutex* mx)
 
 /* This function is the entry point to the scheduler's context switching */
 
-void yield(char* where)
+void yield(Yield_Origin where)
 { 
   /* Reset the timer, so that we are not interrupted by ALARM */
   bios_cancel_timer();
@@ -352,36 +357,56 @@ void yield(char* where)
 
   int current_ready = 0;
 
-  /* Priority management */
-  //printf("%p: Yield called from: %s\n", current, where);
+  /* Priority control */
 
-  if(where=="yield_handler")
+  switch(where)
   {
-    if (current->priority < NUM_OF_QUEUES - 1)
-      current->priority++;
+    case YIELD_HND:
+      if (current->priority < NUM_OF_QUEUES - 1)
+      {
+        current->priority++;
+        current->wait_count = QueuePops[current->priority];
+      }
+      break;
+    case SLEEP_RLS:
+      if (current->priority > 0)
+      {
+        current->priority--;
+        current->wait_count = QueuePops[current->priority];
+      }
+      break;
+    case SERIAL_WRT:
+      if (current->priority > 0)
+      {
+        current->priority--;
+        current->wait_count = QueuePops[current->priority];
+      }
+      break;
+    case START:
+    break;
+    case IDLE1:
+    break;
+    case IDLE2:
+    break;
+    case MUTEX_LCK:
+    break;
+    default:
+      fprintf(stderr, "BAD PRIORITY for current thread %p in yield: %d\n", current, current->priority);
+      assert(0);
   }
-  else if (where=="sleep_releasing")
-  {
-    //if (current->priority > 0)
-      //current->priority--;
-  }
-  else if (where=="serial_write")
+
+  /** Handlig threads that stale */
+  
+  if (current->wait_count>=QueuePops[current->priority]+5)
   {
     if (current->priority > 0)
-      current->priority--;
+      {
+        current->priority--;
+        current->wait_count = QueuePops[current->priority];
+      }
   }
-  else if (where=="idle_thread_1")
-  {
-    
-  }
-  else if (where=="idle_thread_2")
-  {
-    
-  }
-  else{
-    fprintf(stderr, "BAD PRIORITY for current thread %p in yield: %d\n", current, current->priority);
-    assert(0);
-  }
+
+  /** End of priority control */
 
   Mutex_Lock(& current->state_spinlock);
   switch(current->state)
@@ -490,12 +515,12 @@ void gain(int preempt)
 static void idle_thread()
 {
   /* When we first start the idle thread */
-  yield("idle_thread_1");
+  yield(IDLE1);
 
   /* We come here whenever we cannot find a ready thread for our core */
   while(active_threads>0) {
     cpu_core_halt();
-    yield("idle_thread_2");
+    yield(IDLE2);
   }
 
   /* If the idle thread exits here, we are leaving the scheduler! */
