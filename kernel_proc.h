@@ -58,6 +58,29 @@ typedef struct process_control_block {
 } PCB;
 
 
+ //typedef struct process_control_block {
+  //pid_state  pstate;      /**< The pid state for this PCB */
+
+  //PCB* parent;            /**< Parent's pcb. */
+  //int exitval;            /**< The exit value */
+
+  //PTCB* TIDT[MAX_THREADID];/**< The thread table of the process */
+  //Task main_task;         /**< The main thread's function */
+  //int argl;               /**< The main thread's argument length */
+  //void* args;             /**< The main thread's argument string */
+
+  //rlnode children_list;   /**< List of children */
+  //rlnode exited_list;     /**< List of exited children */
+
+  //rlnode children_node;   /**< Intrusive node for @c children_list */
+  //rlnode exited_node;     /**< Intrusive node for @c exited_list */
+  //CondVar child_exit;     /**< Condition variable for @c WaitChild */
+
+  //FCB* FIDT[MAX_FILEID];  /**< The fileid table of the process */
+
+//} PCB;
+
+
 /**
   @brief Initialize the process table.
 

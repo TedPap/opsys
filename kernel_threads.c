@@ -8,7 +8,11 @@
   */
 Tid_t CreateThread(Task task, int argl, void* args)
 {
-	return NOTHREAD;
+	//PTCB* ptcb;
+  //ptcb->tcb = spawn_thread(CURPROC, task);
+  //ptcb->detached = 0;//des fcb gia paromoia ylopoihsh
+  //return ptcb;
+  return -1;
 }
 
 /**

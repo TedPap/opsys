@@ -221,8 +221,6 @@ CCB cctx[MAX_CORES];
   head and tail of this list are stored in  SCHED.
 */
 
-
-//rlnode SCHED;                         /* The scheduler queue */
 rlnode SCHED[NUM_OF_QUEUES];/* Mlfq queues array */
 int QueuePops[NUM_OF_QUEUES] = {0, 0, 0, 0, 0, 0, 0, 0};
 Mutex sched_spinlock = MUTEX_INIT;    /* spinlock for scheduler queue */
@@ -231,7 +229,6 @@ Mutex sched_spinlock = MUTEX_INIT;    /* spinlock for scheduler queue */
 /* Interrupt handler for ALARM */
 void yield_handler()
 {
-  //if CURTHREAD->priority<=2 CURTHREAD->priority++;
   yield(YIELD_HND);
 }
 
@@ -359,6 +356,7 @@ void yield(Yield_Origin where)
 
   /* Priority control */
 
+  Mutex_Lock(& current->state_spinlock);
   switch(where)
   {
     case YIELD_HND:
@@ -383,20 +381,22 @@ void yield(Yield_Origin where)
       }
       break;
     case START:
-    break;
+      break;
     case IDLE1:
-    break;
+      break;
     case IDLE2:
-    break;
+      break;
     case MUTEX_LCK:
-    break;
+      current->priority = 7;
+      current->wait_count = QueuePops[current->priority];
+      break;
     default:
       fprintf(stderr, "BAD PRIORITY for current thread %p in yield: %d\n", current, current->priority);
       assert(0);
   }
 
   /** Handlig threads that stale */
-  
+
   if (current->wait_count>=QueuePops[current->priority]+5)
   {
     if (current->priority > 0)
@@ -408,7 +408,6 @@ void yield(Yield_Origin where)
 
   /** End of priority control */
 
-  Mutex_Lock(& current->state_spinlock);
   switch(current->state)
   {
     case RUNNING:
