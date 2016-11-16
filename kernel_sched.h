@@ -113,16 +113,6 @@ typedef struct thread_control_block
   
 } TCB;
 
-typedef struct process_thread_control_block
-{
-  PCB* owner_pcb;
-  TCB* tcb;
-  void (*thread_func)();
-  uint refcount;
-  
-}PTCB;
-
-
 
 /** Thread stack size */
 #define THREAD_STACK_SIZE  (128*1024)
