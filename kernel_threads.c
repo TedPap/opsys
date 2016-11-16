@@ -1,5 +1,6 @@
 
 #include "tinyos.h"
+#include "kernel_cc.h"
 #include "kernel_sched.h"
 #include "kernel_proc.h"
 #include "kernel_threads.h"
@@ -25,23 +26,36 @@ void start_thread()
   ThreadExit(exitval);
 }
 
+PTCB* create_thread(Task task, int argl, void* args)
+{
+  PTCB* ptcb = (PTCB*) aquire_ptcb();
+  
+  ptcb->refcount = 1;
+  ptcb->tjoin = COND_INIT;
+  ptcb->task = task;
+  ptcb->argl = argl;
+  ptcb->args = args;
+  rlnode_init(& ptcb->ptcb_node, ptcb);
+
+  return ptcb;
+}
+
 /** 
   @brief Create a new thread in the current process.
   */
 Tid_t CreateThread(Task task, int argl, void* args)
 {
-	PTCB* ptcb = (PTCB*) aquire_ptcb();
+	PTCB* ptcb;
 
-  ptcb->owner_pcb = CURPROC;
-  ptcb->refcount = 1;
+  Mutex_Lock(&kernel_mutex);
+    ptcb = create_thread(task, argl, args);
+    TEMP_TASK = task;
+    TEMP_ARGL = argl;
+    TEMP_ARGS = args;
+    ptcb->tcb = spawn_thread(CURPROC, start_thread);
+  Mutex_Unlock(&kernel_mutex);
 
-  TEMP_TASK = task;
-  TEMP_ARGL = argl;
-  TEMP_ARGS = args;
-
-  ptcb->tcb = spawn_thread(ptcb->owner_pcb, start_thread);
   return (Tid_t) ptcb->tcb;
-  //return -1;
 }
 
 /**

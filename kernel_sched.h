@@ -110,6 +110,7 @@ typedef struct thread_control_block
 
   int priority;     /**< the thread's priority */
   int wait_count;    /**< timestamp to determine thread's waiting time */
+  int isIO;
   
 } TCB;
 

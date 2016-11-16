@@ -2,23 +2,31 @@
 #define __KERNEL_THREADS_H
 
 #include "tinyos.h"
+#include "util.h"
+#include "bios.h"
 #include "kernel_proc.h"
 
 
-typedef struct process_thread_control_block
+typedef struct pthread_control_block
 {
-  PCB* owner_pcb;
   TCB* tcb;
   rlnode ptcb_node;
-  //Task task;
-  //int argl;
-  //void* args;
+  Task task;
+  int argl;
+  void* args;
   uint refcount;
+  CondVar tjoin;
   
 }PTCB;
 
 
+void* aquire_ptcb();
+
+void release_ptcb(void* ptr, size_t size);
+
 void start_thread();
+
+PTCB* create_thread(Task task, int argl, void* args);
 
 
 Tid_t CreateThread(Task task, int argl, void* args);

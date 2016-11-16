@@ -156,6 +156,7 @@ TCB* spawn_thread(PCB* pcb, void (*func)())
   tcb->thread_func = func;
   tcb->priority = 0;
   tcb->wait_count = 0;
+  tcb->isIO = 0;
   rlnode_init(& tcb->sched_node, tcb);  /* Intrusive list node */
 
 
@@ -367,18 +368,8 @@ void yield(Yield_Origin where)
       }
       break;
     case SLEEP_RLS:
-      if (current->priority > 0)
-      {
-        current->priority--;
-        current->wait_count = QueuePops[current->priority];
-      }
       break;
     case SERIAL_WRT:
-      if (current->priority > 0)
-      {
-        current->priority--;
-        current->wait_count = QueuePops[current->priority];
-      }
       break;
     case START:
       break;
@@ -397,13 +388,19 @@ void yield(Yield_Origin where)
 
   /** Handlig threads that stale */
 
-  if (current->wait_count>=QueuePops[current->priority]+5)
+  if (current->wait_count<=QueuePops[current->priority]+5)
   {
     if (current->priority > 0)
       {
         current->priority--;
         current->wait_count = QueuePops[current->priority];
       }
+  }
+
+  if (current->isIO == 1)
+  {
+    current->priority--;
+    current->isIO = 0;
   }
 
   /** End of priority control */
