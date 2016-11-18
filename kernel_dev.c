@@ -113,7 +113,7 @@ int serial_read(void* dev, char *buf, unsigned int size)
     int valid = bios_read_serial(dcb->devno, &buf[count]);
     
     if (valid) {
-      CURTHREAD->isIO = 1;
+      CURTHREAD->isIO = true;
       count++;
     }
     else if(count==0) {
@@ -153,7 +153,7 @@ int serial_write(void* dev, const char* buf, unsigned int size)
     int success = bios_write_serial(dcb->devno, buf[count] );
 
     if(success) {
-      CURTHREAD->isIO = 1;
+      CURTHREAD->isIO = true;
       count++;
     } 
     else if(count==0)

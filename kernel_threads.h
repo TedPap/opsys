@@ -6,27 +6,33 @@
 #include "bios.h"
 #include "kernel_proc.h"
 
-
 typedef struct pthread_control_block
 {
   TCB* tcb;
-  rlnode ptcb_node;
+  int exitval;
+  uint refCount;
+
   Task task;
   int argl;
   void* args;
-  uint refcount;
-  CondVar tjoin;
+
+  CondVar join_exit;
+  bool isDetached;
+
+  rlnode ptcb_node;
   
 }PTCB;
 
 
 void* aquire_ptcb();
 
-void release_ptcb(void* ptr, size_t size);
+void release_ptcb(void* ptr);
 
 void start_thread();
 
 PTCB* create_thread(Task task, int argl, void* args);
+
+void bring_out_your_dead(PTCB* ptcb, int* exitval);
 
 
 Tid_t CreateThread(Task task, int argl, void* args);

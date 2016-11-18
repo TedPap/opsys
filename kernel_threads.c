@@ -15,7 +15,7 @@ void* aquire_ptcb()
   return ptr;
 }
 
-void release_ptcb(void* ptr, size_t size)
+void release_ptcb(void* ptr)
 {
   free(ptr);
 }
@@ -30,12 +30,15 @@ PTCB* create_thread(Task task, int argl, void* args)
 {
   PTCB* ptcb = (PTCB*) aquire_ptcb();
   
-  ptcb->refcount = 1;
-  ptcb->tjoin = COND_INIT;
+  ptcb->refCount = 1;
+  ptcb->isDetached = false;
+
   ptcb->task = task;
   ptcb->argl = argl;
   ptcb->args = args;
+
   rlnode_init(& ptcb->ptcb_node, ptcb);
+  ptcb->join_exit = COND_INIT;
 
   return ptcb;
 }
@@ -48,11 +51,11 @@ Tid_t CreateThread(Task task, int argl, void* args)
 	PTCB* ptcb;
 
   Mutex_Lock(&kernel_mutex);
-    ptcb = create_thread(task, argl, args);
-    TEMP_TASK = task;
-    TEMP_ARGL = argl;
-    TEMP_ARGS = args;
-    ptcb->tcb = spawn_thread(CURPROC, start_thread);
+  ptcb = create_thread(task, argl, args);
+  TEMP_TASK = task;
+  TEMP_ARGL = argl;
+  TEMP_ARGS = args;
+  ptcb->tcb = spawn_thread(CURPROC, ptcb, start_thread);
   Mutex_Unlock(&kernel_mutex);
 
   return (Tid_t) ptcb->tcb;
@@ -66,11 +69,50 @@ Tid_t ThreadSelf()
 	return (Tid_t) CURTHREAD;
 }
 
+void bring_out_your_dead(PTCB* ptcb, int* exitval)
+{
+  if(exitval != NULL)
+    *exitval = ptcb->exitval;
+
+  rlist_remove(& ptcb->ptcb_node);
+
+  release_ptcb(ptcb);
+}
+
 /**
   @brief Join the given thread.
   */
 int ThreadJoin(Tid_t tid, int* exitval)
 {
+  bool err = false;
+  Mutex_Lock(&kernel_mutex);
+  TCB* tcb = tid;
+  PTCB* ptcb = tcb->owner_ptcb;
+  PTCB* curr = CURTHREAD->owner_ptcb;
+  if (ptcb->isDetached == true)
+    err = true;
+  if (tcb->owner_pcb != CURTHREAD->owner_pcb)
+    err = true;
+  if (tcb == CURTHREAD)
+    err = true;
+
+  curr->refCount++;
+
+  while(tcb->state != EXITED)
+    Cond_Wait(& kernel_mutex, & ptcb->join_exit);
+
+  bring_out_your_dead(ptcb, exitval);
+
+  curr->refCount--;
+
+  Mutex_Unlock(&kernel_mutex);
+
+  switch(err){
+    case true:
+      return -1;
+    case false:
+      return 0;
+  }
 	return -1;
 }
 
@@ -79,7 +121,28 @@ int ThreadJoin(Tid_t tid, int* exitval)
   */
 int ThreadDetach(Tid_t tid)
 {
-	return -1;
+  bool err = false;
+  Mutex_Lock(&kernel_mutex);
+  TCB* tcb = tid;
+  PTCB* ptcb = tcb->owner_ptcb;
+
+  if (tcb->state == EXITED)
+  {
+    err = true;
+  }
+
+  ptcb->isDetached = true;
+  Cond_Broadcast(& ptcb->join_exit);
+
+  Mutex_Unlock(&kernel_mutex);
+	
+  switch(err){
+    case true:
+      return -1;
+    case false:
+      return 0;
+  }
+  return -1;
 }
 
 /**
@@ -87,7 +150,17 @@ int ThreadDetach(Tid_t tid)
   */
 void ThreadExit(int exitval)
 {
+  PTCB* ptcb = CURTHREAD->owner_ptcb;
+  Mutex_Lock(&kernel_mutex);
 
+  if(ptcb->args) {
+    free(ptcb->args);
+    ptcb->args = NULL;
+  }
+
+  
+
+  Mutex_Unlock(&kernel_mutex);
 }
 
 

@@ -140,13 +140,14 @@ static void thread_start()
   Initialize and return a new TCB
 */
 
-TCB* spawn_thread(PCB* pcb, void (*func)())
+TCB* spawn_thread(PCB* pcb, PTCB* ptcb, void (*func)())
 {
   /* The allocated thread size must be a multiple of page size */
   TCB* tcb = (TCB*) allocate_thread(THREAD_SIZE);
 
   /* Set the owner */
   tcb->owner_pcb = pcb;
+  tcb->owner_ptcb = ptcb;
 
   /* Initialize the other attributes */
   tcb->type = NORMAL_THREAD;
@@ -156,7 +157,7 @@ TCB* spawn_thread(PCB* pcb, void (*func)())
   tcb->thread_func = func;
   tcb->priority = 0;
   tcb->wait_count = 0;
-  tcb->isIO = 0;
+  tcb->isIO = false;
   rlnode_init(& tcb->sched_node, tcb);  /* Intrusive list node */
 
 
@@ -397,10 +398,10 @@ void yield(Yield_Origin where)
       }
   }
 
-  if (current->isIO == 1)
+  if (current->isIO)
   {
     current->priority--;
-    current->isIO = 0;
+    current->isIO = false;
   }
 
   /** End of priority control */

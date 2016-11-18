@@ -185,7 +185,7 @@ Pid_t Exec(Task call, int argl, void* args)
   if (call!=NULL) {
     PTCB* ptcb = create_thread(call, argl, args);
     rlist_push_back(& newproc->ptcb_list, & ptcb->ptcb_node);
-    ptcb->tcb = spawn_thread(newproc, start_main_thread);
+    ptcb->tcb = spawn_thread(newproc, ptcb, start_main_thread);
     wakeup(ptcb->tcb);
   }
 

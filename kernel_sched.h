@@ -86,6 +86,7 @@ typedef enum {
 typedef struct thread_control_block
 {
   PCB* owner_pcb;       /**< This is null for a free TCB */
+  PTCB* owner_ptcb;
 
   ucontext_t context;     /**< The thread context */
 
@@ -110,7 +111,7 @@ typedef struct thread_control_block
 
   int priority;     /**< the thread's priority */
   int wait_count;    /**< timestamp to determine thread's waiting time */
-  int isIO;
+  bool isIO;
   
 } TCB;
 
@@ -171,7 +172,7 @@ extern CCB cctx[MAX_CORES];
   Note that, the new thread is returned in the @c INIT state.
   The caller must use @c wakeup() to start it.
 */
-TCB* spawn_thread(PCB* pcb, void (*func)());
+TCB* spawn_thread(PCB* pcb, PTCB* ptcb, void (*func)());
 
 /**
   @brief Wakeup a blocked thread.
