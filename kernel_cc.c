@@ -120,6 +120,7 @@ int Cond_Wait(Mutex* mutex, CondVar* cv)
 
   /* Now atomically release mutex and sleep */
   Mutex_Unlock(mutex);
+
   sleep_releasing(STOPPED, &(cv->waitset_lock));
 
   /* Re-lock mutex before returning */

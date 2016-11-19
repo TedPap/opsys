@@ -6,6 +6,11 @@
 #include "bios.h"
 #include "kernel_proc.h"
 
+typedef enum pthread_state_e {
+  LIVING,  /**< The PID is given to a process */
+  DEAD  /**< The PID is held by a zombie */
+} ptcb_state;
+
 typedef struct pthread_control_block
 {
   TCB* tcb;
@@ -18,6 +23,8 @@ typedef struct pthread_control_block
 
   CondVar join_exit;
   bool isDetached;
+
+  ptcb_state state;
 
   rlnode ptcb_node;
   

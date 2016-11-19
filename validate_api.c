@@ -810,7 +810,9 @@ BOOT_TEST(test_exit_many_threads,
 {
 
 	int task(int argl, void* args) {
-		fibo(45);
+		fprintf(stderr, "%s\n", "TEST_TASK_1");
+		fibo(41);
+		fprintf(stderr, "%s\n", "TEST_TASK_2");
 		return 2;
 	}
 
@@ -818,12 +820,16 @@ BOOT_TEST(test_exit_many_threads,
 		for(int i=0;i<5;i++)
 			ASSERT(CreateThread(task, 0, NULL) != NOTHREAD);
 
+		fprintf(stderr, "%s\n", "TEST_MTHREAD_1");
 		fibo(35);
+		fprintf(stderr, "%s\n", "TEST_MTHREAD_2");
 		return 0;
 	}
-
+	fprintf(stderr, "%s\n", "TEST_MANY_EXITS_1");
 	Exec(mthread, 0, NULL);
+	fprintf(stderr, "%s\n", "TEST_MANY_EXITS_2");
 	ASSERT(WaitChild(NOPROC, NULL)!=NOPROC);
+	fprintf(stderr, "%s\n", "TEST_MANY_EXITS_3");
 
 	return 0;
 }

@@ -401,6 +401,7 @@ void yield(Yield_Origin where)
   if (current->isIO)
   {
     current->priority--;
+    current->wait_count = QueuePops[current->priority];
     current->isIO = false;
   }
 
@@ -426,6 +427,7 @@ void yield(Yield_Origin where)
 
   /* Get next */
   TCB* next = sched_queue_select();
+  //fprintf(stderr, "CURTHREAD: %p, NEXT: %p\n", CURTHREAD, next);
 
   /* Maybe there was nothing ready in the scheduler queue ? */
   if(next==NULL) {
@@ -513,7 +515,6 @@ static void idle_thread()
 {
   /* When we first start the idle thread */
   yield(IDLE1);
-
   /* We come here whenever we cannot find a ready thread for our core */
   while(active_threads>0) {
     cpu_core_halt();

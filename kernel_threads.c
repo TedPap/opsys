@@ -49,13 +49,17 @@ PTCB* create_thread(Task task, int argl, void* args)
 Tid_t CreateThread(Task task, int argl, void* args)
 {
 	PTCB* ptcb;
+  PCB* pcb;
 
   Mutex_Lock(&kernel_mutex);
   ptcb = create_thread(task, argl, args);
+  rlist_push_back(& CURPROC->ptcb_list, & ptcb->ptcb_node);
+  ptcb->state = LIVING;
   TEMP_TASK = task;
   TEMP_ARGL = argl;
   TEMP_ARGS = args;
   ptcb->tcb = spawn_thread(CURPROC, ptcb, start_thread);
+  wakeup(ptcb->tcb);
   Mutex_Unlock(&kernel_mutex);
 
   return (Tid_t) ptcb->tcb;
@@ -89,22 +93,29 @@ int ThreadJoin(Tid_t tid, int* exitval)
   TCB* tcb = tid;
   PTCB* ptcb = tcb->owner_ptcb;
   PTCB* curr = CURTHREAD->owner_ptcb;
-  if (ptcb->isDetached == true)
+
+  if (ptcb->isDetached == true) {
     err = true;
-  if (tcb->owner_pcb != CURTHREAD->owner_pcb)
+    goto finish;
+  }
+  if (tcb->owner_pcb != CURTHREAD->owner_pcb) {
     err = true;
-  if (tcb == CURTHREAD)
+    goto finish;
+  }
+  if (tcb == CURTHREAD) {
     err = true;
+    goto finish;
+  }
 
   curr->refCount++;
 
-  while(tcb->state != EXITED)
+  while(ptcb->state == LIVING)
     Cond_Wait(& kernel_mutex, & ptcb->join_exit);
 
   bring_out_your_dead(ptcb, exitval);
 
   curr->refCount--;
-
+finish:
   Mutex_Unlock(&kernel_mutex);
 
   switch(err){
@@ -126,7 +137,7 @@ int ThreadDetach(Tid_t tid)
   TCB* tcb = tid;
   PTCB* ptcb = tcb->owner_ptcb;
 
-  if (tcb->state == EXITED)
+  if (tcb->state == EXITED | ptcb->state == DEAD)
   {
     err = true;
   }
@@ -151,14 +162,19 @@ int ThreadDetach(Tid_t tid)
 void ThreadExit(int exitval)
 {
   PTCB* ptcb = CURTHREAD->owner_ptcb;
+
   Mutex_Lock(&kernel_mutex);
+  assert (ptcb->refCount<=1);
 
-  if(ptcb->args) {
-    free(ptcb->args);
-    ptcb->args = NULL;
-  }
+    if (exitval != NULL)
+      ptcb->exitval = exitval;
+    ptcb->state = DEAD;
 
-  
+    rlist_remove(& ptcb->ptcb_node);
+
+    Cond_Broadcast(& ptcb->join_exit);
+
+    sleep_releasing(EXITED, & kernel_mutex);
 
   Mutex_Unlock(&kernel_mutex);
 }
