@@ -5,10 +5,6 @@
 #include "kernel_proc.h"
 #include "kernel_threads.h"
 
-Task TEMP_TASK;
-int TEMP_ARGL;
-void* TEMP_ARGS;
-
 void* aquire_ptcb()
 {
   void* ptr = xmalloc(sizeof(PTCB));
@@ -22,7 +18,10 @@ void release_ptcb(void* ptr)
 
 void start_thread()
 {
-  int exitval = TEMP_TASK(TEMP_ARGL, TEMP_ARGS); //what about null temp_task etc?
+  Task task = CURTHREAD->owner_ptcb->task;
+  int argl = CURTHREAD->owner_ptcb->argl;
+  void* args = CURTHREAD->owner_ptcb->args;
+  int exitval = task(argl, args); //what about null temp_task etc?
   ThreadExit(exitval);
 }
 
@@ -61,9 +60,6 @@ Tid_t CreateThread(Task task, int argl, void* args)
 
   ptcb = create_thread(task, argl, args);
   rlist_push_back(& CURPROC->ptcb_list, & ptcb->ptcb_node);
-  TEMP_TASK = task;
-  TEMP_ARGL = argl;
-  TEMP_ARGS = args;
   ptcb->tcb = spawn_thread(CURPROC, ptcb, start_thread);
   wakeup(ptcb->tcb);
 
@@ -91,6 +87,7 @@ void bring_out_your_dead(PTCB* ptcb, int* exitval)
 
   rlist_remove(& ptcb->ptcb_node);
 
+  //release_TCB(ptcb->tcb);
   release_ptcb(ptcb);
 }
 
@@ -100,10 +97,12 @@ void bring_out_your_dead(PTCB* ptcb, int* exitval)
 int ThreadJoin(Tid_t tid, int* exitval)
 {
   bool err = false;
+  PTCB* ptcb;
   Mutex_Lock(&kernel_mutex);
 
   TCB* tcb = tid;
-  PTCB* ptcb = tcb->owner_ptcb;
+  ptcb = tcb->owner_ptcb;
+  
   PTCB* curr = CURTHREAD->owner_ptcb;
 
   /** Error checks */
@@ -119,7 +118,6 @@ int ThreadJoin(Tid_t tid, int* exitval)
     err = true;
     goto finish;
   }
-
 
   curr->refCount++;
   /**Ok ptcb is legal. Wait for it to exit. */
@@ -200,6 +198,8 @@ void ThreadExit(int exitval)
 
     /** Bye bye cruel world :P */
     sleep_releasing(EXITED, & kernel_mutex);
+
+    //bring_out_your_dead(ptcb, NULL);
 
   Mutex_Unlock(&kernel_mutex);
 }

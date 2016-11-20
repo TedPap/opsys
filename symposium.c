@@ -221,9 +221,8 @@ int SymposiumOfThreads(int argl, void* args)
 	Tid_t thread[symp->N];
 	for(int i=0;i<N;i++) {
 		thread[i] = CreateThread(PhilosopherThread, i, &S);
-    /** Added usleep to better "run" symposium */
-    usleep(5*QUANTUM);
 	}  
+
 
 	/* Wait for philosophers to exit */  
 	for(int i=0;i<N;i++) {
