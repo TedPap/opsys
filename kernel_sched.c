@@ -249,6 +249,7 @@ void sched_queue_add(TCB* tcb)
 {
   /* Insert at the end of the priority queue */
   Mutex_Lock(& sched_spinlock);
+  assert(tcb);
   rlist_push_back(& SCHED[tcb->priority], & tcb->sched_node);
   Mutex_Unlock(& sched_spinlock);
 
@@ -371,6 +372,11 @@ void yield(Yield_Origin where)
     case SLEEP_RLS:
       break;
     case SERIAL_WRT:
+      /**if (current->priority > 0)
+      {
+        current->priority--;
+        current->wait_count = QueuePops[current->priority];
+      }*/
       break;
     case START:
       break;
@@ -400,9 +406,12 @@ void yield(Yield_Origin where)
 
   if (current->isIO)
   {
-    current->priority--;
-    current->wait_count = QueuePops[current->priority];
-    current->isIO = false;
+    if (current->priority > 0)
+    {
+      current->priority--;
+      current->wait_count = QueuePops[current->priority];
+      current->isIO = false;
+    }
   }
 
   /** End of priority control */

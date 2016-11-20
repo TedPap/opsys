@@ -168,6 +168,7 @@ void ThreadExit(int exitval)
 
     if (exitval != NULL)
       ptcb->exitval = exitval;
+    
     ptcb->state = DEAD;
 
     rlist_remove(& ptcb->ptcb_node);

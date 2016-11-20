@@ -11,6 +11,9 @@
 
 #define QUIET 0  /* Use 1 for supperssing printing (for timing tests), 0 for normal printing */
 
+
+#define QUANTUM (50000L)
+
 /*
   This file contains a number of example programs for tinyos.
 */
@@ -218,6 +221,7 @@ int SymposiumOfThreads(int argl, void* args)
 	Tid_t thread[symp->N];
 	for(int i=0;i<N;i++) {
 		thread[i] = CreateThread(PhilosopherThread, i, &S);
+    usleep(5*QUANTUM);
 	}  
 
 	/* Wait for philosophers to exit */  
