@@ -22,16 +22,21 @@ void release_ptcb(void* ptr)
 
 void start_thread()
 {
-  int exitval = TEMP_TASK(TEMP_ARGL, TEMP_ARGS); //what about null temp_task etc
+  int exitval = TEMP_TASK(TEMP_ARGL, TEMP_ARGS); //what about null temp_task etc?
   ThreadExit(exitval);
 }
 
+
+/** 
+  @brief Initialize a new thread.
+  */
 PTCB* create_thread(Task task, int argl, void* args)
 {
   PTCB* ptcb = (PTCB*) aquire_ptcb();
   
-  ptcb->refCount = 1;
+  ptcb->refCount = 0;
   ptcb->isDetached = false;
+  ptcb->state = LIVING;
 
   ptcb->task = task;
   ptcb->argl = argl;
@@ -43,6 +48,7 @@ PTCB* create_thread(Task task, int argl, void* args)
   return ptcb;
 }
 
+
 /** 
   @brief Create a new thread in the current process.
   */
@@ -52,14 +58,15 @@ Tid_t CreateThread(Task task, int argl, void* args)
   PCB* pcb;
 
   Mutex_Lock(&kernel_mutex);
+
   ptcb = create_thread(task, argl, args);
   rlist_push_back(& CURPROC->ptcb_list, & ptcb->ptcb_node);
-  ptcb->state = LIVING;
   TEMP_TASK = task;
   TEMP_ARGL = argl;
   TEMP_ARGS = args;
   ptcb->tcb = spawn_thread(CURPROC, ptcb, start_thread);
   wakeup(ptcb->tcb);
+
   Mutex_Unlock(&kernel_mutex);
 
   return (Tid_t) ptcb->tcb;
@@ -73,6 +80,10 @@ Tid_t ThreadSelf()
 	return (Tid_t) CURTHREAD;
 }
 
+
+/** 
+  @brief Cleanup of an exited ptcb.
+  */
 void bring_out_your_dead(PTCB* ptcb, int* exitval)
 {
   if(exitval != NULL)
@@ -90,10 +101,12 @@ int ThreadJoin(Tid_t tid, int* exitval)
 {
   bool err = false;
   Mutex_Lock(&kernel_mutex);
+
   TCB* tcb = tid;
   PTCB* ptcb = tcb->owner_ptcb;
   PTCB* curr = CURTHREAD->owner_ptcb;
 
+  /** Error checks */
   if (ptcb->isDetached == true) {
     err = true;
     goto finish;
@@ -107,15 +120,18 @@ int ThreadJoin(Tid_t tid, int* exitval)
     goto finish;
   }
 
-  curr->refCount++;
 
+  curr->refCount++;
+  /**Ok ptcb is legal. Wait for it to exit. */
   while(ptcb->state == LIVING)
     Cond_Wait(& kernel_mutex, & ptcb->join_exit);
 
+  /** Clean the exited ptcb. */
   bring_out_your_dead(ptcb, exitval);
 
   curr->refCount--;
 finish:
+
   Mutex_Unlock(&kernel_mutex);
 
   switch(err){
@@ -142,6 +158,8 @@ int ThreadDetach(Tid_t tid)
     err = true;
   }
 
+  /** Detach the thread and broadcast all threads that had
+  joined it. */
   ptcb->isDetached = true;
   Cond_Broadcast(& ptcb->join_exit);
 
@@ -164,17 +182,23 @@ void ThreadExit(int exitval)
   PTCB* ptcb = CURTHREAD->owner_ptcb;
 
   Mutex_Lock(&kernel_mutex);
-  assert (ptcb->refCount<=1);
+
+  /** Check for a valid refCount. */
+  assert (ptcb->refCount<=0);
 
     if (exitval != NULL)
       ptcb->exitval = exitval;
-    
+
     ptcb->state = DEAD;
 
+    /** Remove from process's list of ptcbs. */
     rlist_remove(& ptcb->ptcb_node);
 
+    /** Broadcast all threads that had
+    joined this one. */
     Cond_Broadcast(& ptcb->join_exit);
 
+    /** Bye bye cruel world :P */
     sleep_releasing(EXITED, & kernel_mutex);
 
   Mutex_Unlock(&kernel_mutex);

@@ -107,18 +107,20 @@ int serial_read(void* dev, char *buf, unsigned int size)
   preempt_off;            /* Stop preemption */
   Mutex_Lock(& dcb->spinlock);
 
-  int count =  0;
+  uint count =  0;
 
   while(count<size) {
     int valid = bios_read_serial(dcb->devno, &buf[count]);
     
     if (valid) {
-      count++;
-    }
-    else if(count==0) {
+      /** Mark thread as IO */
       assert(CURTHREAD);
       if (CURTHREAD->isIO == false)
         CURTHREAD->isIO = true;
+      
+      count++;
+    }
+    else if(count==0) {
       Cond_Wait(&dcb->spinlock, &dcb->rx_ready);
     }
     else
@@ -155,9 +157,11 @@ int serial_write(void* dev, const char* buf, unsigned int size)
     int success = bios_write_serial(dcb->devno, buf[count] );
 
     if(success) {
+      /** Mark thread as IO */
       assert(CURTHREAD);
       if (CURTHREAD->isIO == false)
         CURTHREAD->isIO = true;
+
       count++;
     } 
     else if(count==0)

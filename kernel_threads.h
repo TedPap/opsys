@@ -6,38 +6,85 @@
 #include "bios.h"
 #include "kernel_proc.h"
 
+
+/** 
+  @brief The ptcb state
+
+  The state of the ptcb. It can either be alive(LIVING) or aa zombie(DEAD). 
+  */
+
 typedef enum pthread_state_e {
-  LIVING,  /**< The PID is given to a process */
-  DEAD  /**< The PID is held by a zombie */
+  LIVING,  /**< The PTCB is in use, its thread has not EXITED */
+  DEAD  /**< The PTCB is a zombie, its thread has EXITED */
 } ptcb_state;
+
+
+/**
+  @brief Process Thread Control Block
+
+  This structure holds all information pertaining to a ptcb.
+ */
 
 typedef struct pthread_control_block
 {
-  TCB* tcb;
-  int exitval;
-  uint refCount;
+  TCB* tcb;               /**< The thread of this PTCB */
+  int exitval;            /**< The exit value */
+  uint refCount;          /**< This PTCB's refCount */
 
-  Task task;
-  int argl;
-  void* args;
+  Task task;              /**< The thread's task */
+  int argl;               /**< The thread's argument length */
+  void* args;             /**< The thread's argument string */
 
-  CondVar join_exit;
-  bool isDetached;
+  CondVar join_exit;      /**< Condition variable for ThreadJoin */
+  bool isDetached;        /**< Flag for ThreadDetach */
 
-  ptcb_state state;
+  ptcb_state state;       /**< The state of this PTCB */
 
-  rlnode ptcb_node;
+  rlnode ptcb_node;       /**< Intrusive node for ptcb_list of each process */
   
 }PTCB;
 
 
+/**
+  @brief Allocate memory for the ptcb instant.
+
+  This function is called during ptcb initialization( create_thread ).
+  */
+
 void* aquire_ptcb();
+
+
+/**
+  @brief Free the memory allocated to the ptcb instant.
+
+  This function is called during ptcb cleanup( bring_out_your_dead ).
+  */
 
 void release_ptcb(void* ptr);
 
+
+/**
+  @brief The function that runs the thread's task.
+
+  This function is called during ptcb creation( CreateThread ).
+  */
+
 void start_thread();
 
+
+/**
+  @brief Initialization of the ptcb struct.
+
+  This function is called during ptcb creation( CreateThread, Exec ).
+  */
+
 PTCB* create_thread(Task task, int argl, void* args);
+
+/**
+  @brief Cleanup of the exited thread's ptcb.
+
+  This function is called after a thread has exited in ThreadJoin.
+  */
 
 void bring_out_your_dead(PTCB* ptcb, int* exitval);
 

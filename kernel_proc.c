@@ -183,7 +183,6 @@ Pid_t Exec(Task call, int argl, void* args)
     we do, because once we wakeup the new thread it may run! so we need to have finished
     the initialization of the PCB.
    */
-
   if (call!=NULL) {
     PTCB* ptcb = create_thread(call, argl, args);
     rlist_push_back(& newproc->ptcb_list, & ptcb->ptcb_node);

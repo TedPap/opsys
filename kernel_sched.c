@@ -357,11 +357,13 @@ void yield(Yield_Origin where)
 
   int current_ready = 0;
 
-  /* Priority control */
+  /*************** 
+  Priority control 
+  ***************/
 
-  Mutex_Lock(& current->state_spinlock);
   switch(where)
   {
+    /** Handling threads that expire their quantum */
     case YIELD_HND:
       if (current->priority < NUM_OF_QUEUES - 1)
       {
@@ -369,14 +371,14 @@ void yield(Yield_Origin where)
         current->wait_count = QueuePops[current->priority];
       }
       break;
+    case MUTEX_LCK:
+      /** Handling priority invertion */
+      current->priority = NUM_OF_QUEUES-1;
+      current->wait_count = QueuePops[current->priority];
+      break;
     case SLEEP_RLS:
       break;
     case SERIAL_WRT:
-      /**if (current->priority > 0)
-      {
-        current->priority--;
-        current->wait_count = QueuePops[current->priority];
-      }*/
       break;
     case START:
       break;
@@ -384,26 +386,12 @@ void yield(Yield_Origin where)
       break;
     case IDLE2:
       break;
-    case MUTEX_LCK:
-      current->priority = 7;
-      current->wait_count = QueuePops[current->priority];
-      break;
     default:
       fprintf(stderr, "BAD PRIORITY for current thread %p in yield: %d\n", current, current->priority);
       assert(0);
   }
 
-  /** Handlig threads that stale */
-
-  if (current->wait_count<=QueuePops[current->priority]+5)
-  {
-    if (current->priority > 0)
-      {
-        current->priority--;
-        current->wait_count = QueuePops[current->priority];
-      }
-  }
-
+  /** Handling IO threads */
   if (current->isIO)
   {
     if (current->priority > 0)
@@ -414,8 +402,22 @@ void yield(Yield_Origin where)
     }
   }
 
-  /** End of priority control */
+  /** Handlig threads that stall */
+  if (current->wait_count<=QueuePops[current->priority]+(NUM_OF_QUEUES/2+1))
+  {
+    if (current->priority > 0)
+      {
+        current->priority--;
+        current->wait_count = QueuePops[current->priority];
+      }
+  }
 
+  /********************** 
+  End of priority control 
+  **********************/
+
+
+  Mutex_Lock(& current->state_spinlock);
   switch(current->state)
   {
     case RUNNING:
@@ -436,7 +438,6 @@ void yield(Yield_Origin where)
 
   /* Get next */
   TCB* next = sched_queue_select();
-  //fprintf(stderr, "CURTHREAD: %p, NEXT: %p\n", CURTHREAD, next);
 
   /* Maybe there was nothing ready in the scheduler queue ? */
   if(next==NULL) {
@@ -445,8 +446,6 @@ void yield(Yield_Origin where)
     else
       next = & CURCORE.idle_thread;
   }
-
-  //printf("!!YIELD: %s//PRIORITY: %d\n!!CURTHREAD: %p//NEXT: %p\n", where, current->priority, current, next);
 
   /* ok, link the current and next TCB, for the gain phase */
   current->next = next;
@@ -537,7 +536,7 @@ static void idle_thread()
 
 
 /*
-  Initialize the scheduler queue
+  Initialize all scheduler queues
  */
 void initialize_scheduler()
 {
