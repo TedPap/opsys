@@ -941,6 +941,7 @@ int data_producer(int argl, void* args)
 {
 	assert(argl == sizeof(int));
 	int nbytes = *(int*)args;
+	int i = 0;
 
 	Close(0);
 
@@ -951,6 +952,7 @@ int data_producer(int argl, void* args)
 		int rc = Write(1, buffer, n);
 		assert(rc>0);
 		nbytes -= rc;
+		i++;
 	}
 	Close(1);
 	return 0;

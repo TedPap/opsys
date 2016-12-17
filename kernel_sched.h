@@ -59,7 +59,7 @@ typedef enum {
     YIELD_HND,    /**< Yield in yield_handler   */
     SLEEP_RLS,    /**< Yield in sleep_releasing   */
     SERIAL_WRT,   /**< Yield in serial_write from kernel_dev.c   */
-    MUTEX_LCK,    /**< Yield in mutex_lock from kernel_cc.c   */
+    MUTEX_LCK     /**< Yield in mutex_lock from kernel_cc.c   */
   } Yield_Origin;
 
 /** @brief Thread phase. 
