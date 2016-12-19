@@ -359,20 +359,28 @@ void Exit(int exitval)
   sleep_releasing(EXITED, & kernel_mutex);
 }
 
+
 typedef struct info_control_block {
-  int point;
+  int point, count;
   char info_buff[MAX_PROC];
 }ICB;
+
 
 int info_read(void* ptr, char *buf, unsigned int size) {
   int i;
   ICB* temp = (ICB*) ptr;
-  for (i=0;i<size;i++) {
-    buf[i] = temp->info_buff[temp->point+i];
+  if (temp->point+size <= temp->count) {
+    for (i=0;i<size;i++) {
+      buf[i] = temp->info_buff[temp->point+i];
+    }
+    temp->point += size;
+    return i;
   }
-  temp->point += size;
-  return i;
+  else {
+    return 0;
+  }
 }
+
 
 int info_write(void* ptr, const char* buf, unsigned int size)
 {
@@ -384,6 +392,7 @@ int info_close(void* ptr)
 {
   return 0;
 }
+
 
 void* info_open(uint minor)
 {
@@ -398,15 +407,16 @@ file_ops info_fops = {
   .Close = info_close
 };
 
+
 void* acquire_procinfo()
 {
   void* ptr = xmalloc(sizeof(procinfo));
   return ptr;
 }
 
+
 Fid_t OpenInfo()
 {
-  fprintf(stderr, "%s\n", "TEST1");
   Fid_t fid;
   FCB* fcb;
   ICB* icb = xmalloc(sizeof(ICB));
@@ -435,7 +445,7 @@ Fid_t OpenInfo()
         if (pcb->pstate == ALIVE)
           pinfo->alive = 1;
 
-        pinfo->thread_count = 1312;
+        pinfo->thread_count = 1;
         pinfo->main_task = pcb->main_task;
         pinfo->argl = pcb->argl;
 
@@ -444,7 +454,7 @@ Fid_t OpenInfo()
           pinfo->args[j] = temp_args[j];
 
         memcpy(&icb->info_buff[i * pinfo_size], pinfo, pinfo_size);
-        fprintf(stderr, "%s, pid %d\n", "TEST", pinfo->pid);
+        icb->count += pinfo_size;
       }
     }
   }
