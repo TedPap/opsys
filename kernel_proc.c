@@ -359,10 +359,107 @@ void Exit(int exitval)
   sleep_releasing(EXITED, & kernel_mutex);
 }
 
+typedef struct info_control_block {
+  int point;
+  char info_buff[MAX_PROC];
+}ICB;
 
+int info_read(void* ptr, char *buf, unsigned int size) {
+  int i;
+  ICB* temp = (ICB*) ptr;
+  for (i=0;i<size;i++) {
+    buf[i] = temp->info_buff[temp->point+i];
+  }
+  temp->point += size;
+  return i;
+}
+
+int info_write(void* ptr, const char* buf, unsigned int size)
+{
+    return 0;
+}
+
+
+int info_close(void* ptr) 
+{
+  return 0;
+}
+
+void* info_open(uint minor)
+{
+  return NULL;
+}
+
+
+file_ops info_fops = {
+  .Open = info_open,
+  .Read = info_read,
+  .Write = info_write,
+  .Close = info_close
+};
+
+void* acquire_procinfo()
+{
+  void* ptr = xmalloc(sizeof(procinfo));
+  return ptr;
+}
 
 Fid_t OpenInfo()
 {
-	return NOFILE;
+  fprintf(stderr, "%s\n", "TEST1");
+  Fid_t fid;
+  FCB* fcb;
+  ICB* icb = xmalloc(sizeof(ICB));
+  bool err = false;
+  int i, j, pinfo_size;
+  PCB* pcb;
+  char* temp_args;
+
+  icb->point = 0;
+
+  pinfo_size = sizeof(procinfo);
+
+  Mutex_Lock(& kernel_mutex);
+
+  if (FCB_reserve(1, &fid, &fcb) == 1) {
+    fcb->streamobj = icb;
+    fcb->streamfunc = &info_fops;
+    procinfo* pinfo = acquire_procinfo();
+
+    for (i=0;i<MAX_PROC;i++) {
+      pcb = &PT[i];
+      if (pcb->pstate == ALIVE || pcb->pstate == ZOMBIE) {
+        pinfo->pid = get_pid(pcb);
+        pinfo->ppid = get_pid(pcb->parent);
+        pinfo->alive = 0;
+        if (pcb->pstate == ALIVE)
+          pinfo->alive = 1;
+
+        pinfo->thread_count = 1312;
+        pinfo->main_task = pcb->main_task;
+        pinfo->argl = pcb->argl;
+
+        temp_args = pcb->args;
+        for (j=0;j<pinfo->argl;j++)
+          pinfo->args[j] = temp_args[j];
+
+        memcpy(&icb->info_buff[i * pinfo_size], pinfo, pinfo_size);
+        fprintf(stderr, "%s, pid %d\n", "TEST", pinfo->pid);
+      }
+    }
+  }
+  else {
+    err = true;
+  }
+
+  Mutex_Unlock(& kernel_mutex);
+
+  switch(err) {
+    case true:
+      return NOFILE;
+    case false:
+      return fid;
+  }
+  return NOFILE;
 }
 

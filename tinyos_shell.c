@@ -165,6 +165,7 @@ int SystemInfo(size_t argc, const char** argv)
 {
 	printf("Number of cores         = %d\n", cpu_cores());
 	printf("Number of serial devices= %d\n", bios_serial_ports());
+	int temp = 1000;
 	Fid_t finfo = OpenInfo();
 	if(finfo!=NOFILE) {
 		/* Print per-process info */
@@ -185,14 +186,15 @@ int SystemInfo(size_t argc, const char** argv)
 				/* Try to give some known names */
 				if(info.pid==1) pname = "init";
 			}
-
-			printf("%5d %5d %6s %8u %20s\n",
-				info.pid,
-				info.ppid,
-				(info.alive?"ALIVE":"ZOMBIE"),
-				info.thread_count,
-				pname
-				);
+			if (info.pid != temp)
+				printf("%5d %5d %6s %8u %20s\n",
+					info.pid,
+					info.ppid,
+					(info.alive?"ALIVE":"ZOMBIE"),
+					info.thread_count,
+					pname
+					);
+			temp = info.pid;
 		}
 	}
 	printf("\n");
