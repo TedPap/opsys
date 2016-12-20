@@ -59,6 +59,12 @@ typedef struct process_control_block {
 } PCB;
 
 
+typedef struct info_control_block {
+  int point, count;
+  char info_buff[MAX_PROC];
+}ICB;
+
+
 /**
   @brief Initialize the process table.
 

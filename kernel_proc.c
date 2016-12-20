@@ -360,15 +360,10 @@ void Exit(int exitval)
 }
 
 
-typedef struct info_control_block {
-  int point, count;
-  char info_buff[MAX_PROC];
-}ICB;
-
-
 int info_read(void* ptr, char *buf, unsigned int size) {
   int i;
   ICB* temp = (ICB*) ptr;
+  
   if (temp->point+size <= temp->count) {
     for (i=0;i<size;i++) {
       buf[i] = temp->info_buff[temp->point+i];
@@ -445,7 +440,7 @@ Fid_t OpenInfo()
         if (pcb->pstate == ALIVE)
           pinfo->alive = 1;
 
-        pinfo->thread_count = 1;
+        pinfo->thread_count = rlist_len(& pcb->ptcb_list);
         pinfo->main_task = pcb->main_task;
         pinfo->argl = pcb->argl;
 

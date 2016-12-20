@@ -102,11 +102,12 @@ int Pipe(pipe_t* pipe)
 {
 	Fid_t Fids[2];
 	bool err = false;
+	PICB* picb;
 
 
   	Mutex_Lock(& kernel_mutex);
 
-	PICB* picb = (PICB*) pipe_init();
+	picb = (PICB*) pipe_init();
 
 	if(FCB_reserve(2, Fids, picb->pfcb) == 1) {
 		err = false;
