@@ -3,13 +3,13 @@
 #define buffer_size 16384
 
 typedef struct Pipe_control_block {
-	pipe_t* pipe;		/**< The pipe file ids */
+	pipe_t* pipe;				/**< The pipe file ids */
 	FCB* pfcb[2];
-	file_ops pipe_ops;	/**< The file_ops of pipes */
-	char puffer[buffer_size];
-	int balance;
-	Mutex spinlock;
-  	CondVar buff_full;
+	file_ops pipe_ops;			/**< The file_ops of pipes */
+	char puffer[buffer_size];	/**< The pipe buffer */
+	int balance;				/**< Point to where we have writen/read this far */
+	Mutex spinlock;				
+  	CondVar buff_full;			/**< Condition variable of pipe */
 }PICB;
 /**
 	@brief Construct and return a pipe.

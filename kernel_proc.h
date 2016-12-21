@@ -59,6 +59,7 @@ typedef struct process_control_block {
 } PCB;
 
 
+/** The Info control block contains all the info created by Openinfo() */
 typedef struct info_control_block {
   int point, count;
   char info_buff[MAX_PROC];

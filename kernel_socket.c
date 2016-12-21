@@ -25,6 +25,7 @@ void* request_init() {
 }
 
 
+/** Call to the read pipe's Read fileop. */
 int socket_read(void* ptr, char *buf, unsigned int size) {
 	SCB* temp = (SCB*) ptr;
 	FCB* fcb;
@@ -42,6 +43,7 @@ int socket_read(void* ptr, char *buf, unsigned int size) {
 }
 
 
+/** Call to the write pipe's Write fileop. */
 int socket_write(void* ptr, const char* buf, unsigned int size) {
 	SCB* temp = (SCB*) ptr;
 	FCB* fcb;
@@ -59,8 +61,8 @@ int socket_write(void* ptr, const char* buf, unsigned int size) {
 }
 
 
+/** Free the alocated space of the socket. */
 int socket_close(void* ptr) {
-	//fprintf(stderr, "%s\n", "PAPA JOHN'S");
 	SCB* temp = (SCB*) ptr;
 	temp->refcount--;
 	if (temp->refcount == 0)
@@ -84,6 +86,7 @@ file_ops socket_fops = {
 };
 
 
+/** Create and initialize an UNBOUND socket control block. */
 Fid_t Socket(port_t port)
 {
 	bool err = false;
@@ -92,15 +95,14 @@ Fid_t Socket(port_t port)
 	SCB* scb;
 
   	Mutex_Lock(& kernel_mutex);
-	//fprintf(stderr, "%s\n", "SOCKET TEST 1");
 
+  	/** Error check. */
   	if (port < NOPORT || port > MAX_PORT) {
-		//fprintf(stderr, "%s\n", "SOCKET TEST 2");
   		err = true;
   	}
   	else {
 		if (FCB_reserve(1, &fid, &fcb) == 1) {
-			//fprintf(stderr, "%s, %d\n", "SOCKET TEST 3", fid);
+			/** Check for enough fid's */
 			scb = (SCB*) socket_init();
 			scb->refcount = 1;
 			scb->type = UNBOUND;
@@ -109,7 +111,6 @@ Fid_t Socket(port_t port)
 			fcb->streamfunc = &socket_fops;
 		}
 		else {
-			//fprintf(stderr, "%s\n", "SOCKET TEST 4");
 			err = true;
 		}
 	}
@@ -126,18 +127,18 @@ Fid_t Socket(port_t port)
 }
 
 
+/** Further initialize an UNBOUND socket as a LISTENER. */
 int Listen(Fid_t sock)
 {
 	bool err = false;
 	SCB* scb;
 	FCB* fcb;
 	PCB* curr = CURPROC;
-	//fprintf(stderr, "%s, %d\n", "LISTEN TEST 1", sock);
 
   	Mutex_Lock(& kernel_mutex);
 
+  	/** Error checks. */
 	if (sock < MAX_FILEID && curr->FIDT[sock] != NULL && sock != NOFILE) {
-		//fprintf(stderr, "%s\n", "LISTEN TEST 2");
 		fcb = get_fcb(sock);
 		scb = (SCB*) fcb->streamobj;
 
@@ -145,10 +146,11 @@ int Listen(Fid_t sock)
 			err = true;
 		}
 		else {
-			//fprintf(stderr, "%s\n", "LISTEN TEST 3");
 			scb->type = LISTENER;
 			scb->listener.cv = COND_INIT;
 			rlnode_init(& scb->listener.request_list, NULL);
+
+			/** Hold info about which port we occupie. */
 			OccupiedPorts[scb->portnum] = true;
 			PortSockets[scb->portnum] = sock;
 		}
@@ -169,6 +171,8 @@ int Listen(Fid_t sock)
 }
 
 
+/** Check if all is ok and create a PEER socket to receive the I/O 
+of the connecting PEER. */
 Fid_t Accept(Fid_t lsock)
 {
 	bool err = false;
@@ -180,18 +184,20 @@ Fid_t Accept(Fid_t lsock)
 	pipe_t pipe_1, pipe_2;
 
   	Mutex_Lock(& kernel_mutex);
-  	//fprintf(stderr, "%s\n", "ACCEPT TEST 1");
+  	/** Error checks. */
   	if (lsock<MAX_FILEID && curr->FIDT[lsock]!=NULL) {
-  		//fprintf(stderr, "%s\n", "ACCEPT TEST 2");
   		lfcb = get_fcb(lsock);
 		lscb = (SCB*) lfcb->streamobj;
+  		/** Error checks. */
 		if (lscb->type == LISTENER ) {
-  			//fprintf(stderr, "%s\n", "ACCEPT TEST 3");
+			/** While request list is empty, wait for connections. */
 			while (is_rlist_empty(& lscb->listener.request_list) == 1)
 				Cond_Wait(& kernel_mutex, &lscb->listener.cv);
 
+			/** Check if there are enough fids. */
 			if (FCB_reserve(1, &pfid, &pfcb) == 1){
-  				//fprintf(stderr, "%s\n", "ACCEPT TEST 4");
+
+				/** Initiate the PEER socket. */
 				pscb = (SCB*) socket_init();
 				pscb->refcount = 0;
 				pscb->type = PEER;
@@ -201,11 +207,12 @@ Fid_t Accept(Fid_t lsock)
 
 				Mutex_Unlock(& kernel_mutex);
 
+				/** Create the pipes to be used by the peers. */
 				if (Pipe(& pipe_1) == 0 && Pipe(& pipe_2) == 0) {
-  					//fprintf(stderr, "%s\n", "ACCEPT TEST 5");
 
 					Mutex_Lock(& kernel_mutex);
 
+					/** Link everything up. */
 					rcb = rlist_pop_front(& lscb->listener.request_list)->rcb;
 					pscb->peer.peer2 = rcb->scb;
 					pscb->peer.fid_send = pipe_1.write;
@@ -214,7 +221,6 @@ Fid_t Accept(Fid_t lsock)
 					rcb->scb->peer.fid_send = pipe_1.read;
 					rcb->scb->peer.fid_receive = pipe_2.write;
 					rcb->flag = true;
-					//fprintf(stderr, "%s\n", "finished with Accept");
 					Cond_Signal(& rcb->cv);
 				}
 				else{
@@ -245,24 +251,24 @@ Fid_t Accept(Fid_t lsock)
 	return NOFILE;
 }
 
-
+/** Create a connection request to the listening socket occupying the given port. */
 int Connect(Fid_t sock, port_t port, timeout_t timeout)
 {
 	bool err = false;
 	SCB* lscb, * pscb;
-	//FCB* lfcb;
 	RCB* rcb;
 
 	Mutex_Lock(& kernel_mutex);
-	//fprintf(stderr, "%s\n", "CONNECT TEST 1");
+
+	/** Error checks. */
 	if (port != NOPORT && port <= MAX_PORT && OccupiedPorts[port] == true ){
 		lscb = get_fcb(PortSockets[port])->streamobj;
 		pscb = get_fcb(sock)->streamobj;
 
-		//fprintf(stderr, "%s\n", "CONNECT TEST 2");
+		/** Error checks. */
 		if(pscb->type == UNBOUND){
 
-			//fprintf(stderr, "%s\n", "CONNECT TEST 3");
+			/** Initialize the RCB to bw pushed into the Listener's list. */
 			rcb = (RCB*) request_init();
 			rlnode_init(& rcb->node, rcb);
 			rcb->scb = pscb;
@@ -270,27 +276,25 @@ int Connect(Fid_t sock, port_t port, timeout_t timeout)
 			rcb->flag = false;
 			rlist_push_back(& lscb->listener.request_list, & rcb->node);
 
+			/** Signal the listener that it has a request. */
 			Cond_Signal(& lscb->listener.cv);
 
-			//fprintf(stderr, "%s\n", "Waiting...");
+			/** Wait to be processed by Accept. */
 			Cond_Wait(& kernel_mutex, & rcb->cv);
-  			//fprintf(stderr, "%s\n", "Returned to Connect");
-
 			usleep(timeout*10);
+
+			/** If not processed by the end of timeout return error. */
 			if (rcb->flag == false){
-				//fprintf(stderr, "%s\n", "CONNECT TEST 4");
 				err = true;
 			}
 		}
 		else {
 
-			//fprintf(stderr, "%s\n", "CONNECT TEST 5");
 			err = true;
 		}
 	}
 	else {
 
-		//fprintf(stderr, "%s\n", "CONNECT TEST 6");
 		err = true;
 	}
 
@@ -305,7 +309,7 @@ int Connect(Fid_t sock, port_t port, timeout_t timeout)
 	return -1;
 }
 
-
+/** Close the right fids depending on the shutdown mode*/
 int ShutDown(Fid_t sock, shutdown_mode how)
 {
 	Fid_t soc_read, soc_write;

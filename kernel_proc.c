@@ -360,14 +360,18 @@ void Exit(int exitval)
 }
 
 
+/** Simple read that stops when it read all the info */
 int info_read(void* ptr, char *buf, unsigned int size) {
   int i;
   ICB* temp = (ICB*) ptr;
   
+  /* Check that we do not exceed the amount that we wrote into
+  the icb's buffer */
   if (temp->point+size <= temp->count) {
     for (i=0;i<size;i++) {
       buf[i] = temp->info_buff[temp->point+i];
     }
+    /** increase the read size pointer */
     temp->point += size;
     return i;
   }
@@ -448,7 +452,9 @@ Fid_t OpenInfo()
         for (j=0;j<pinfo->argl;j++)
           pinfo->args[j] = temp_args[j];
 
+        /** Copy all the info into the control block's buffer so it can be read */
         memcpy(&icb->info_buff[i * pinfo_size], pinfo, pinfo_size);
+        /** Increase the write size pointer of the icb */
         icb->count += pinfo_size;
       }
     }
