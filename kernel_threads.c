@@ -16,6 +16,7 @@ void release_ptcb(void* ptr)
   free(ptr);
 }
 
+
 void start_thread()
 {
   Task task = CURTHREAD->owner_ptcb->task;
@@ -54,7 +55,6 @@ PTCB* create_thread(Task task, int argl, void* args)
 Tid_t CreateThread(Task task, int argl, void* args)
 {
 	PTCB* ptcb;
-  PCB* pcb;
 
   Mutex_Lock(&kernel_mutex);
 
@@ -151,7 +151,7 @@ int ThreadDetach(Tid_t tid)
   TCB* tcb = tid;
   PTCB* ptcb = tcb->owner_ptcb;
 
-  if (tcb->state == EXITED | ptcb->state == DEAD)
+  if (tcb->state == EXITED || ptcb->state == DEAD)
   {
     err = true;
   }

@@ -8,24 +8,29 @@ typedef enum socket_type_e {
 	PEER
 } socket_type;
 
-typedef struct listener_control_block LCB;
-typedef struct peer_control_block PECB;
+
+typedef struct socket_control_block SCB;
+
 
 typedef struct request_control_block {
 	rlnode node;
-	LCB* lcb;
+	SCB* scb;
 	CondVar cv;
+	bool flag;
 } RCB;
+
 
 typedef struct listener_control_block {
 	CondVar cv;
 	rlnode request_list;
 } LCB;
 
+
 typedef struct peer_control_block {
-	PECB* peer;
-	Fid_t pipe_send, pipe_receive;
+	SCB* peer2;
+	Fid_t fid_send, fid_receive;
 } PECB;
+
 
 typedef struct socket_control_block {
 	socket_type type;

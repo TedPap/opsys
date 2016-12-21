@@ -1090,10 +1090,12 @@ void connect_sockets(Fid_t sock1, Fid_t lsock, Fid_t* sock2, port_t port)
 	int accept_thread(int argl, void* args) {
 		*sock2 = Accept(lsock);
 		ASSERT(*sock2 != NOFILE);
+		//fprintf(stderr, "%s\n", "Test for seg1");
 		return 0;
 	}
 	int connect_thread(int argl, void* args) {
 		ASSERT(Connect(sock1, port, 1000)==0);
+		//fprintf(stderr, "%s\n", "Test for seg2");
 		return 0;
 	}
 
@@ -1103,7 +1105,9 @@ void connect_sockets(Fid_t sock1, Fid_t lsock, Fid_t* sock2, port_t port)
 	ASSERT(t1!=NOTHREAD);
 	ASSERT(t2!=NOTHREAD);
 	ASSERT(ThreadJoin(t1, NULL)==0);
+	//fprintf(stderr, "%s\n", "Test for seg3");
 	ASSERT(ThreadJoin(t2, NULL)==0);
+	//fprintf(stderr, "%s\n", "Test for seg4");
 
 }
 void check_transfer(Fid_t from, Fid_t to)

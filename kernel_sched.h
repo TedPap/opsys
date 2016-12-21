@@ -164,6 +164,8 @@ extern CCB cctx[MAX_CORES];
 #define CURPROC  (CURTHREAD->owner_pcb)
 
 
+void release_TCB(TCB* tcb);
+
 /**
   @brief Create a new thread.
 

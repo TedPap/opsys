@@ -83,11 +83,9 @@ int pipe_write(void* ptr, const char* buf, unsigned int size)
 
 int pipe_close(void* ptr) 
 {
-	PICB* picb = (PICB*) ptr;
+	//PICB* picb = (PICB*) ptr;
 	//fprintf(stderr, "%s\n", "pipe_close");
-	if (picb->pfcb[0]->refcount == 0 && picb->pfcb[1]->refcount == 0) {
-		//release pipe;
-	}
+	free(ptr);
   	return 0;
 }
 
